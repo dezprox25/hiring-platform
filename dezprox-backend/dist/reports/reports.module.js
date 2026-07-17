@@ -1,0 +1,43 @@
+"use strict";
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ReportsModule = void 0;
+const common_1 = require("@nestjs/common");
+const typeorm_1 = require("@nestjs/typeorm");
+const reports_controller_1 = require("./reports.controller");
+const reports_service_1 = require("./reports.service");
+const feedback_service_1 = require("./feedback.service");
+const report_entity_1 = require("./entities/report.entity");
+const feedback_entity_1 = require("./entities/feedback.entity");
+const assessment_entity_1 = require("../assessments/entities/assessment.entity");
+const mcq_answer_entity_1 = require("../assessments/entities/mcq-answer.entity");
+const typing_result_entity_1 = require("../assessments/entities/typing-result.entity");
+const coding_submission_entity_1 = require("../assessments/entities/coding-submission.entity");
+const candidate_entity_1 = require("../candidates/entities/candidate.entity");
+let ReportsModule = class ReportsModule {
+};
+exports.ReportsModule = ReportsModule;
+exports.ReportsModule = ReportsModule = __decorate([
+    (0, common_1.Module)({
+        imports: [
+            typeorm_1.TypeOrmModule.forFeature([
+                report_entity_1.Report,
+                feedback_entity_1.Feedback,
+                assessment_entity_1.Assessment,
+                mcq_answer_entity_1.McqAnswer,
+                typing_result_entity_1.TypingResult,
+                coding_submission_entity_1.CodingSubmission,
+                candidate_entity_1.Candidate,
+            ]),
+        ],
+        controllers: [reports_controller_1.ReportsController],
+        providers: [reports_service_1.ReportsService, feedback_service_1.FeedbackService],
+        exports: [reports_service_1.ReportsService],
+    })
+], ReportsModule);
+//# sourceMappingURL=reports.module.js.map
