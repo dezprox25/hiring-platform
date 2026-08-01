@@ -53,16 +53,20 @@ import databaseConfig from './config/database.config';
     CacheModule.registerAsync({
       isGlobal: true,
       inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        store: await redisStore({
-          host: configService.get<string>('REDIS_HOST', 'localhost'),
-          port: configService.get<number>('REDIS_PORT', 6379),
-          password: configService.get<string>('REDIS_PASSWORD'),
-          db: configService.get<number>('REDIS_DB', 0),
-          ttl: 600, // 10 minutes default TTL
-          maxRetriesPerRequest: null,
-        }),
-      }),
+      useFactory: async (configService: ConfigService) => {
+        const host = configService.get<string>('REDIS_HOST', 'localhost');
+        return {
+          store: await redisStore({
+            host,
+            port: configService.get<number>('REDIS_PORT', 6379),
+            password: configService.get<string>('REDIS_PASSWORD'),
+            db: configService.get<number>('REDIS_DB', 0),
+            tls: host.includes('upstash.io') || configService.get<string>('REDIS_TLS') === 'true' ? { rejectUnauthorized: false } : undefined,
+            ttl: 600, // 10 minutes default TTL
+            maxRetriesPerRequest: null,
+          } as any),
+        };
+      },
     }),
     ThrottlerModule.forRoot([
       {
@@ -72,15 +76,19 @@ import databaseConfig from './config/database.config';
     ]),
     BullModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        connection: {
-          host: configService.get<string>('REDIS_HOST', 'localhost'),
-          port: configService.get<number>('REDIS_PORT', 6379),
-          password: configService.get<string>('REDIS_PASSWORD'),
-          db: configService.get<number>('REDIS_DB', 0),
-          maxRetriesPerRequest: null,
-        },
-      }),
+      useFactory: (configService: ConfigService) => {
+        const host = configService.get<string>('REDIS_HOST', 'localhost');
+        return {
+          connection: {
+            host,
+            port: configService.get<number>('REDIS_PORT', 6379),
+            password: configService.get<string>('REDIS_PASSWORD'),
+            db: configService.get<number>('REDIS_DB', 0),
+            tls: host.includes('upstash.io') || configService.get<string>('REDIS_TLS') === 'true' ? { rejectUnauthorized: false } : undefined,
+            maxRetriesPerRequest: null,
+          } as any,
+        };
+      },
     }),
     DatabaseModule,
     AuthModule,

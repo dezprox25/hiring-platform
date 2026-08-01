@@ -25,6 +25,7 @@ export class RedisIoAdapter extends IoAdapter {
       port,
       password,
       db,
+      tls: host.includes('upstash.io') || this.configService.get<string>('REDIS_TLS') === 'true' ? { rejectUnauthorized: false } : undefined,
       maxRetriesPerRequest: null,
       retryStrategy: (times) => Math.min(times * 50, 2000),
     });

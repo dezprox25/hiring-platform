@@ -32,6 +32,7 @@ let RedisService = RedisService_1 = class RedisService {
             port,
             password,
             db,
+            tls: host.includes('upstash.io') || this.configService.get('REDIS_TLS') === 'true' ? { rejectUnauthorized: false } : undefined,
             maxRetriesPerRequest: null,
             retryStrategy: (times) => {
                 const delay = Math.min(times * 50, 2000);
