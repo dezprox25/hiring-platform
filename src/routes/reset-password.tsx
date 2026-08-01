@@ -9,7 +9,7 @@ import { motion } from "framer-motion";
 import { authApi } from "@/lib/api";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/reset-password" as any)({
+export const Route = createFileRoute("/reset-password")({
   head: () => ({
     meta: [
       { title: "Reset Password — Dezprox" },
