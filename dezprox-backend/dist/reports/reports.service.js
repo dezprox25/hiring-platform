@@ -175,7 +175,20 @@ let ReportsService = class ReportsService {
     async findByCandidateId(candidateId, user) {
         const report = await this.reportsRepository.findOne({
             where: { candidateId },
-            relations: ['candidate', 'candidate.user', 'assessment', 'feedbacks', 'feedbacks.user'],
+            relations: ['candidate', 'candidate.user', 'assessment', 'feedbacks', 'feedbacks.manager'],
+        });
+        if (!report)
+            throw new common_1.NotFoundException('Report not found');
+        (0, ownership_helper_1.assertOwnership)(user.sub, report.candidate.user.id, user.role);
+        if (user.role === role_enum_1.Role.CANDIDATE && !report.isResultReleased) {
+            throw new common_1.BadRequestException('Result not released yet');
+        }
+        return this.mapToResponse(report, user.role);
+    }
+    async findById(id, user) {
+        const report = await this.reportsRepository.findOne({
+            where: { id },
+            relations: ['candidate', 'candidate.user', 'assessment', 'feedbacks', 'feedbacks.manager'],
         });
         if (!report)
             throw new common_1.NotFoundException('Report not found');

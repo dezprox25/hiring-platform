@@ -13,6 +13,15 @@ export declare class AuthController {
         accessToken: string;
         refreshToken: string;
     }>;
+    forgotPassword(email?: string): Promise<{
+        message: string;
+    }>;
+    resetPassword(body?: {
+        token?: string;
+        password?: string;
+    }): Promise<{
+        message: string;
+    }>;
     refresh(user: JwtPayload & {
         refreshToken: string;
     }): Promise<{

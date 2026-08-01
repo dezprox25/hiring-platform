@@ -1,4 +1,5 @@
 export declare enum QuestionType {
     MCQ = "mcq",
-    CODING = "coding"
+    CODING = "coding",
+    TYPING = "typing"
 }

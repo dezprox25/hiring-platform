@@ -27,7 +27,7 @@ function ResultsPage() {
 
   if (isLoading) {
     return (
-      <DashboardLayout role="candidate">
+      <DashboardLayout role="candidate" title="Assessment Results">
         <div className="space-y-6">
           <Skeleton className="h-12 w-64 rounded-xl" />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -41,7 +41,7 @@ function ResultsPage() {
 
   if (isError || !report) {
     return (
-      <DashboardLayout role="candidate">
+      <DashboardLayout role="candidate" title="Assessment Results">
         <div className="flex flex-col items-center justify-center py-20 text-center">
            <ShieldAlert className="h-16 w-16 text-muted-foreground opacity-20 mb-4" />
            <h2 className="text-xl font-bold">Results not available</h2>
@@ -58,7 +58,7 @@ function ResultsPage() {
 
   if (!released) {
     return (
-      <DashboardLayout role="candidate">
+      <DashboardLayout role="candidate" title="Assessment Results">
         <div className="flex flex-col items-center justify-center py-20 text-center">
            <Zap className="h-16 w-16 text-primary opacity-20 mb-4 animate-pulse" />
            <h2 className="text-xl font-bold">Review in progress</h2>
@@ -72,7 +72,7 @@ function ResultsPage() {
   }
 
   return (
-    <DashboardLayout role="candidate">
+    <DashboardLayout role="candidate" title="Assessment Results">
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>

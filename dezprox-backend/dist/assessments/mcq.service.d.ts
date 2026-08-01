@@ -6,6 +6,7 @@ import { SubmitMcqDto } from './dto/submit-mcq.dto';
 import { McqAnswer } from './entities/mcq-answer.entity';
 import { Question } from './entities/question.entity';
 import { QuestionType } from './enums/question-type.enum';
+import { McqQuestionService } from '../question-bank/mcq-question.service';
 export interface CandidateMcqQuestion {
     id: string;
     type: QuestionType;
@@ -22,7 +23,8 @@ export declare class McqService {
     private readonly mcqAnswersRepository;
     private readonly assessmentsService;
     private cacheManager;
-    constructor(questionsRepository: Repository<Question>, mcqAnswersRepository: Repository<McqAnswer>, assessmentsService: AssessmentsService, cacheManager: Cache);
+    private readonly mcqQuestionService;
+    constructor(questionsRepository: Repository<Question>, mcqAnswersRepository: Repository<McqAnswer>, assessmentsService: AssessmentsService, cacheManager: Cache, mcqQuestionService: McqQuestionService);
     getQuestions(assessmentId: string, user: JwtPayload): Promise<CandidateMcqQuestion[]>;
     submitAnswers(assessmentId: string, dto: SubmitMcqDto, user: JwtPayload): Promise<{
         score: number;

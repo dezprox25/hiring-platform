@@ -105,7 +105,43 @@ let MailService = class MailService {
         }
         catch (error) {
             console.error('Mail send failed:', error);
-            throw new common_1.InternalServerErrorException('Failed to send invitation email');
+        }
+    }
+    async sendPasswordReset(to, token) {
+        const appUrl = this.configService.get('APP_URL') || this.configService.get('FRONTEND_URL') || 'http://localhost:5173';
+        const resetLink = `${appUrl}/reset-password?token=${token}`;
+        const from = this.configService.get('SMTP_FROM') || 'noreply@dezprox.com';
+        if (!this.transporter) {
+            console.log(`[Dev Mail] Password Reset for ${to}: ${resetLink}`);
+            return;
+        }
+        const html = `
+      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 12px;">
+        <h2 style="color: #0f172a;">Password Reset Request</h2>
+        <p style="color: #475569; line-height: 1.6;">
+          We received a request to reset your Dezprox account password. Click the link below to set a new password:
+        </p>
+        <div style="margin: 24px 0;">
+          <a href="${resetLink}" style="display: inline-block; background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">
+            Reset Password
+          </a>
+        </div>
+        <p style="font-size: 12px; color: #64748b;">Or copy this link into your browser: ${resetLink}</p>
+        <p style="margin-top: 32px; font-size: 12px; color: #94a3b8;">
+          If you didn't request a password reset, you can ignore this email. Your password will remain unchanged.
+        </p>
+      </div>
+    `;
+        try {
+            await this.transporter.sendMail({
+                from,
+                to,
+                subject: 'Reset your password — Dezprox',
+                html,
+            });
+        }
+        catch (error) {
+            console.error('Password reset mail send failed:', error);
         }
     }
 };

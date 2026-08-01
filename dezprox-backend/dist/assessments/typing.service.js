@@ -19,11 +19,14 @@ const typeorm_2 = require("typeorm");
 const assessments_service_1 = require("./assessments.service");
 const typing_result_entity_1 = require("./entities/typing-result.entity");
 const assessment_status_enum_1 = require("./enums/assessment-status.enum");
+const question_entity_1 = require("./entities/question.entity");
+const question_type_enum_1 = require("./enums/question-type.enum");
 let TypingService = class TypingService {
-    constructor(typingResultsRepository, assessmentsService) {
+    constructor(typingResultsRepository, questionsRepository, assessmentsService) {
         this.typingResultsRepository = typingResultsRepository;
+        this.questionsRepository = questionsRepository;
         this.assessmentsService = assessmentsService;
-        this.passages = [
+        this.defaultPassages = [
             'Clear communication helps teams ship reliable software with fewer misunderstandings and faster feedback loops.',
             'A strong developer writes code that is easy to read, easy to maintain, and easy to improve over time.',
             'Hiring decisions improve when technical skill, collaboration, and ownership are reviewed together instead of separately.',
@@ -41,7 +44,7 @@ let TypingService = class TypingService {
         if (assessment.status !== assessment_status_enum_1.AssessmentStatus.ROUND_2) {
             throw new common_1.BadRequestException('Typing round is not active');
         }
-        return { passage: this.resolvePassage(assessmentId) };
+        return { passage: await this.resolvePassage(assessmentId) };
     }
     calculateWpm(typedText, passage, timeTakenSeconds) {
         const trimmed = typedText.trim();
@@ -67,7 +70,7 @@ let TypingService = class TypingService {
             throw new common_1.BadRequestException('Typing round is not active');
         }
         this.assessmentsService.validateTimeLimit(assessment, 'typing');
-        const expectedPassage = this.resolvePassage(assessmentId);
+        const expectedPassage = await this.resolvePassage(assessmentId);
         const metrics = this.calculateWpm(dto.typedText, expectedPassage, dto.timeTakenSeconds);
         const existing = await this.typingResultsRepository.findOne({ where: { assessmentId } });
         const result = existing ?? this.typingResultsRepository.create({ assessmentId });
@@ -82,17 +85,24 @@ let TypingService = class TypingService {
         await this.assessmentsService.advanceRound(assessmentId);
         return saved;
     }
-    resolvePassage(assessmentId) {
+    async resolvePassage(assessmentId) {
+        const dbPassages = await this.questionsRepository.find({
+            where: { type: question_type_enum_1.QuestionType.TYPING, isActive: true },
+            order: { id: 'ASC' },
+        });
+        const list = dbPassages.length > 0 ? dbPassages.map((q) => q.text) : this.defaultPassages;
         const numericSeed = Number.parseInt(assessmentId.replace(/-/g, '').slice(0, 8), 16);
-        const index = Number.isNaN(numericSeed) ? 0 : numericSeed % this.passages.length;
-        return this.passages[index];
+        const index = Number.isNaN(numericSeed) ? 0 : numericSeed % list.length;
+        return list[index];
     }
 };
 exports.TypingService = TypingService;
 exports.TypingService = TypingService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(typing_result_entity_1.TypingResult)),
+    __param(1, (0, typeorm_1.InjectRepository)(question_entity_1.Question)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
         assessments_service_1.AssessmentsService])
 ], TypingService);
 //# sourceMappingURL=typing.service.js.map

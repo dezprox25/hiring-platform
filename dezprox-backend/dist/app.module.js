@@ -18,6 +18,7 @@ const setup_1 = require("@sentry/nestjs/setup");
 const setup_2 = require("@sentry/nestjs/setup");
 const nestjs_pino_1 = require("nestjs-pino");
 const auth_module_1 = require("./auth/auth.module");
+const jwt_auth_guard_1 = require("./auth/guards/jwt-auth.guard");
 const users_module_1 = require("./users/users.module");
 const candidates_module_1 = require("./candidates/candidates.module");
 const mail_module_1 = require("./mail/mail.module");
@@ -120,6 +121,10 @@ exports.AppModule = AppModule = __decorate([
             {
                 provide: core_1.APP_GUARD,
                 useClass: throttler_1.ThrottlerGuard,
+            },
+            {
+                provide: core_1.APP_GUARD,
+                useClass: jwt_auth_guard_1.JwtAuthGuard,
             },
             {
                 provide: core_1.APP_FILTER,

@@ -78,7 +78,7 @@ export class CodingService {
           correctAnswer: null,
           codeStarter: null,
           isActive: true,
-          createdById: assessment.candidate.user?.id || assessment.candidate.userId,
+          createdById: assessment.candidate.user?.id || (assessment.candidate as any).userId,
         });
         question = await this.questionsRepository.save(question);
       }

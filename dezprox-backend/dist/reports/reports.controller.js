@@ -45,7 +45,7 @@ let ReportsController = class ReportsController {
         return this.reportsService.findByCandidateId(candidateId, user);
     }
     async findById(id, user) {
-        return this.reportsService.findByCandidateId(id, user);
+        return this.reportsService.findById(id, user);
     }
     async releaseResult(id, dto, user) {
         return this.reportsService.releaseResult(id, dto, user);

@@ -23,13 +23,15 @@ const assessment_status_enum_1 = require("./enums/assessment-status.enum");
 const question_type_enum_1 = require("./enums/question-type.enum");
 const reports_service_1 = require("../reports/reports.service");
 const ai_evaluation_service_1 = require("../ai-evaluation/ai-evaluation.service");
+const coding_question_service_1 = require("../question-bank/coding-question.service");
 let CodingService = class CodingService {
-    constructor(questionsRepository, codingSubmissionsRepository, assessmentsService, reportsService, aiEvaluationService) {
+    constructor(questionsRepository, codingSubmissionsRepository, assessmentsService, reportsService, aiEvaluationService, codingQuestionService) {
         this.questionsRepository = questionsRepository;
         this.codingSubmissionsRepository = codingSubmissionsRepository;
         this.assessmentsService = assessmentsService;
         this.reportsService = reportsService;
         this.aiEvaluationService = aiEvaluationService;
+        this.codingQuestionService = codingQuestionService;
     }
     async getQuestion(assessmentId, user) {
         const assessment = await this.assessmentsService.getAssessmentForUser(assessmentId, user);
@@ -44,13 +46,41 @@ let CodingService = class CodingService {
             return existingSubmission.question;
         }
         const category = assessment.candidate.roleApplied;
-        let question = await this.questionsRepository
-            .createQueryBuilder('question')
-            .where('question.type = :type', { type: question_type_enum_1.QuestionType.CODING })
-            .andWhere('question.isActive = :isActive', { isActive: true })
-            .andWhere('LOWER(question.category) = LOWER(:category)', { category })
-            .orderBy('RANDOM()')
-            .getOne();
+        let codingBankQuestion = null;
+        try {
+            codingBankQuestion = await this.codingQuestionService.findOneActive(category);
+        }
+        catch {
+        }
+        let question = null;
+        if (codingBankQuestion) {
+            question = await this.questionsRepository.findOne({
+                where: { id: codingBankQuestion.id },
+            });
+            if (!question) {
+                question = this.questionsRepository.create({
+                    type: question_type_enum_1.QuestionType.CODING,
+                    category: category,
+                    difficulty: codingBankQuestion.difficulty,
+                    text: codingBankQuestion.prompt,
+                    options: null,
+                    correctAnswer: null,
+                    codeStarter: null,
+                    isActive: true,
+                    createdById: assessment.candidate.user?.id || assessment.candidate.userId,
+                });
+                question = await this.questionsRepository.save(question);
+            }
+        }
+        if (!question) {
+            question = await this.questionsRepository
+                .createQueryBuilder('question')
+                .where('question.type = :type', { type: question_type_enum_1.QuestionType.CODING })
+                .andWhere('question.isActive = :isActive', { isActive: true })
+                .andWhere('LOWER(question.category) = LOWER(:category)', { category })
+                .orderBy('RANDOM()')
+                .getOne();
+        }
         if (!question) {
             question = await this.questionsRepository
                 .createQueryBuilder('question')
@@ -152,6 +182,7 @@ exports.CodingService = CodingService = __decorate([
         typeorm_2.Repository,
         assessments_service_1.AssessmentsService,
         reports_service_1.ReportsService,
-        ai_evaluation_service_1.AiEvaluationService])
+        ai_evaluation_service_1.AiEvaluationService,
+        coding_question_service_1.CodingQuestionService])
 ], CodingService);
 //# sourceMappingURL=coding.service.js.map

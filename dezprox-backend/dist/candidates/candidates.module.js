@@ -15,6 +15,7 @@ const candidate_entity_1 = require("./entities/candidate.entity");
 const users_module_1 = require("../users/users.module");
 const mail_module_1 = require("../mail/mail.module");
 const gateway_module_1 = require("../gateway/gateway.module");
+const assessments_module_1 = require("../assessments/assessments.module");
 let CandidatesModule = class CandidatesModule {
 };
 exports.CandidatesModule = CandidatesModule;
@@ -25,6 +26,7 @@ exports.CandidatesModule = CandidatesModule = __decorate([
             users_module_1.UsersModule,
             mail_module_1.MailModule,
             (0, common_1.forwardRef)(() => gateway_module_1.GatewayModule),
+            (0, common_1.forwardRef)(() => assessments_module_1.AssessmentsModule),
         ],
         controllers: [candidates_controller_1.CandidatesController],
         providers: [candidates_service_1.CandidatesService],

@@ -40,6 +40,7 @@ export declare class ReportsService {
         total: number;
     }>;
     findByCandidateId(candidateId: string, user: JwtPayload): Promise<any>;
+    findById(id: string, user: JwtPayload): Promise<any>;
     releaseResult(reportId: string, dto: ReleaseResultDto, user: JwtPayload): Promise<Report>;
     toggleShortlist(reportId: string, isShortlisted: boolean): Promise<Report>;
     private mapToResponse;

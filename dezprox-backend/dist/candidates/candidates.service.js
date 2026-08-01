@@ -58,13 +58,15 @@ const role_enum_1 = require("../common/enums/role.enum");
 const ownership_helper_1 = require("../common/helpers/ownership.helper");
 const user_entity_1 = require("../users/entities/user.entity");
 const assessment_gateway_1 = require("../gateway/assessment.gateway");
+const assessments_service_1 = require("../assessments/assessments.service");
 let CandidatesService = class CandidatesService {
-    constructor(candidateRepository, usersService, mailService, dataSource, gateway) {
+    constructor(candidateRepository, usersService, mailService, dataSource, gateway, assessmentsService) {
         this.candidateRepository = candidateRepository;
         this.usersService = usersService;
         this.mailService = mailService;
         this.dataSource = dataSource;
         this.gateway = gateway;
+        this.assessmentsService = assessmentsService;
     }
     async create(dto, createdBy) {
         const existingUser = await this.usersService.findByEmail(dto.email);
@@ -113,6 +115,11 @@ let CandidatesService = class CandidatesService {
             });
             const savedCandidate = await queryRunner.manager.save(candidate);
             await queryRunner.commitTransaction();
+            try {
+                await this.assessmentsService.create(savedCandidate.id);
+            }
+            catch {
+            }
             if (password) {
                 try {
                     await this.mailService.sendInvite(dto.email, dto.fullName, password);
@@ -302,10 +309,12 @@ exports.CandidatesService = CandidatesService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(candidate_entity_1.Candidate)),
     __param(4, (0, common_1.Inject)((0, common_1.forwardRef)(() => assessment_gateway_1.AssessmentGateway))),
+    __param(5, (0, common_1.Inject)((0, common_1.forwardRef)(() => assessments_service_1.AssessmentsService))),
     __metadata("design:paramtypes", [typeorm_2.Repository,
         users_service_1.UsersService,
         mail_service_1.MailService,
         typeorm_2.DataSource,
-        assessment_gateway_1.AssessmentGateway])
+        assessment_gateway_1.AssessmentGateway,
+        assessments_service_1.AssessmentsService])
 ], CandidatesService);
 //# sourceMappingURL=candidates.service.js.map

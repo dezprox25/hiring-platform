@@ -9,8 +9,8 @@ if (!import.meta.env.VITE_API_URL && import.meta.env.PROD) {
 const BASE_URL = getHttpApiBaseUrl();
 
 /** Nest global response wrapper `{ data: T; status: string }` */
-export function unwrapData<T>(res: AxiosResponse<{ data: T; status?: string }>): T {
-  return res.data.data;
+export function unwrapData<T = any>(res: any): T {
+  return res?.data?.data ?? res?.data ?? res;
 }
 
 export interface ApiError {

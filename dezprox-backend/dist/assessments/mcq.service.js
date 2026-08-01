@@ -22,12 +22,14 @@ const assessment_status_enum_1 = require("./enums/assessment-status.enum");
 const mcq_answer_entity_1 = require("./entities/mcq-answer.entity");
 const question_entity_1 = require("./entities/question.entity");
 const question_type_enum_1 = require("./enums/question-type.enum");
+const mcq_question_service_1 = require("../question-bank/mcq-question.service");
 let McqService = class McqService {
-    constructor(questionsRepository, mcqAnswersRepository, assessmentsService, cacheManager) {
+    constructor(questionsRepository, mcqAnswersRepository, assessmentsService, cacheManager, mcqQuestionService) {
         this.questionsRepository = questionsRepository;
         this.mcqAnswersRepository = mcqAnswersRepository;
         this.assessmentsService = assessmentsService;
         this.cacheManager = cacheManager;
+        this.mcqQuestionService = mcqQuestionService;
     }
     async getQuestions(assessmentId, user) {
         const assessment = await this.assessmentsService.getAssessmentForUser(assessmentId, user);
@@ -35,22 +37,61 @@ let McqService = class McqService {
             throw new common_1.BadRequestException('MCQ round is not active');
         }
         const category = assessment.candidate.roleApplied;
-        let questions = await this.questionsRepository
-            .createQueryBuilder('question')
-            .where('question.type = :type', { type: question_type_enum_1.QuestionType.MCQ })
-            .andWhere('question.isActive = :isActive', { isActive: true })
-            .andWhere('LOWER(question.category) = LOWER(:category)', { category })
-            .orderBy('RANDOM()')
-            .take(15)
-            .getMany();
-        if (questions.length === 0) {
-            questions = await this.questionsRepository
+        let bankQuestions = [];
+        try {
+            bankQuestions = await this.mcqQuestionService.findForAssessment(category, 15);
+        }
+        catch {
+        }
+        let questions;
+        if (bankQuestions.length > 0) {
+            for (const bq of bankQuestions) {
+                const existing = await this.questionsRepository.findOne({ where: { id: bq.id } });
+                if (!existing) {
+                    await this.questionsRepository.save(this.questionsRepository.create({
+                        id: bq.id,
+                        type: question_type_enum_1.QuestionType.MCQ,
+                        category: bq.topic || category,
+                        difficulty: bq.difficulty,
+                        text: bq.questionText,
+                        options: bq.options,
+                        correctAnswer: bq.correctAnswer,
+                        isActive: true,
+                    }));
+                }
+            }
+            questions = this.shuffle([...bankQuestions]).map(q => ({
+                id: q.id,
+                type: question_type_enum_1.QuestionType.MCQ,
+                category: q.topic || category,
+                difficulty: q.difficulty,
+                text: q.questionText,
+                options: q.options,
+                correctAnswer: q.correctAnswer,
+                codeStarter: null,
+                createdAt: q.createdAt,
+                updatedAt: q.updatedAt,
+            }));
+        }
+        else {
+            let rawQuestions = await this.questionsRepository
                 .createQueryBuilder('question')
                 .where('question.type = :type', { type: question_type_enum_1.QuestionType.MCQ })
                 .andWhere('question.isActive = :isActive', { isActive: true })
+                .andWhere('LOWER(question.category) = LOWER(:category)', { category })
                 .orderBy('RANDOM()')
                 .take(15)
                 .getMany();
+            if (rawQuestions.length === 0) {
+                rawQuestions = await this.questionsRepository
+                    .createQueryBuilder('question')
+                    .where('question.type = :type', { type: question_type_enum_1.QuestionType.MCQ })
+                    .andWhere('question.isActive = :isActive', { isActive: true })
+                    .orderBy('RANDOM()')
+                    .take(15)
+                    .getMany();
+            }
+            questions = rawQuestions;
         }
         const cacheEntry = {};
         const response = this.shuffle([...questions]).map((question) => {
@@ -135,6 +176,6 @@ exports.McqService = McqService = __decorate([
     __param(3, (0, common_1.Inject)(cache_manager_1.CACHE_MANAGER)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
         typeorm_2.Repository,
-        assessments_service_1.AssessmentsService, Object])
+        assessments_service_1.AssessmentsService, Object, mcq_question_service_1.McqQuestionService])
 ], McqService);
 //# sourceMappingURL=mcq.service.js.map

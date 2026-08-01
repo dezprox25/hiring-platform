@@ -15,8 +15,8 @@ export declare class Question {
     correctAnswer: string | null;
     codeStarter: string | null;
     isActive: boolean;
-    createdById: string;
-    createdBy: User;
+    createdById: string | null;
+    createdBy: User | null;
     createdAt: Date;
     updatedAt: Date;
 }

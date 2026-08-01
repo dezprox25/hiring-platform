@@ -58,7 +58,7 @@ export function TypingRound({ assessmentId, onComplete }: { assessmentId: string
         </CardHeader>
         <CardContent className="pt-6">
           <div className="rounded-xl border bg-muted/40 p-6 font-mono text-lg leading-relaxed select-none">
-            {target.split("").map((ch, i) => {
+            {target.split("").map((ch: string, i: number) => {
               const typed = text[i];
               const cls = typed == null ? "text-muted-foreground/50" : typed === ch ? "text-foreground" : "bg-destructive/20 text-destructive border-b-2 border-destructive";
               return <span key={i} className={cls}>{ch}</span>;

@@ -122,6 +122,50 @@ let UsersService = UsersService_1 = class UsersService {
         const user = this.usersRepository.create(userData);
         return this.usersRepository.save(user);
     }
+    async findAll() {
+        const users = await this.usersRepository.find({ order: { created_at: 'DESC' } });
+        return users.map((u) => {
+            const { password_hash, refresh_token_hash, ...safeUser } = u;
+            return safeUser;
+        });
+    }
+    async createUser(dto) {
+        const email = dto.email.trim().toLowerCase();
+        const existing = await this.findByEmail(email);
+        if (existing) {
+            throw new Error('User with this email already exists');
+        }
+        const rawPassword = dto.password || 'password123';
+        const passwordHash = await bcrypt.hash(rawPassword, 10);
+        const user = this.usersRepository.create({
+            email,
+            role: dto.role,
+            password_hash: passwordHash,
+            is_active: dto.is_active ?? true,
+        });
+        const saved = await this.usersRepository.save(user);
+        const { password_hash, refresh_token_hash, ...safe } = saved;
+        return safe;
+    }
+    async updateUser(id, dto) {
+        const user = await this.findById(id);
+        if (!user) {
+            throw new Error('User not found');
+        }
+        if (dto.role)
+            user.role = dto.role;
+        if (dto.is_active !== undefined)
+            user.is_active = dto.is_active;
+        if (dto.password) {
+            user.password_hash = await bcrypt.hash(dto.password, 10);
+        }
+        const saved = await this.usersRepository.save(user);
+        const { password_hash, refresh_token_hash, ...safe } = saved;
+        return safe;
+    }
+    async removeUser(id) {
+        await this.usersRepository.delete(id);
+    }
 };
 exports.UsersService = UsersService;
 exports.UsersService = UsersService = UsersService_1 = __decorate([

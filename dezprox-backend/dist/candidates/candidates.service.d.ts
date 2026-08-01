@@ -8,6 +8,7 @@ import { UsersService } from '../users/users.service';
 import { MailService } from '../mail/mail.service';
 import { JwtPayload } from '../auth/interfaces/jwt-payload.interface';
 import { AssessmentGateway } from '../gateway/assessment.gateway';
+import { AssessmentsService } from '../assessments/assessments.service';
 export interface CandidateResponse {
     id: string;
     fullName: string;
@@ -38,7 +39,8 @@ export declare class CandidatesService {
     private mailService;
     private dataSource;
     private readonly gateway;
-    constructor(candidateRepository: Repository<Candidate>, usersService: UsersService, mailService: MailService, dataSource: DataSource, gateway: AssessmentGateway);
+    private readonly assessmentsService;
+    constructor(candidateRepository: Repository<Candidate>, usersService: UsersService, mailService: MailService, dataSource: DataSource, gateway: AssessmentGateway, assessmentsService: AssessmentsService);
     create(dto: CreateCandidateDto, createdBy: JwtPayload): Promise<CandidateResponse>;
     findAll(params: {
         status?: string;

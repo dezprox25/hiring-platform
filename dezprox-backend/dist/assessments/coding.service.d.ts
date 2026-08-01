@@ -8,13 +8,15 @@ import { Question } from './entities/question.entity';
 import { ReportsService } from '../reports/reports.service';
 import { ManagerReviewDto } from './dto/manager-review.dto';
 import { AiEvaluationService } from '../ai-evaluation/ai-evaluation.service';
+import { CodingQuestionService } from '../question-bank/coding-question.service';
 export declare class CodingService {
     private readonly questionsRepository;
     private readonly codingSubmissionsRepository;
     private readonly assessmentsService;
     private readonly reportsService;
     private readonly aiEvaluationService;
-    constructor(questionsRepository: Repository<Question>, codingSubmissionsRepository: Repository<CodingSubmission>, assessmentsService: AssessmentsService, reportsService: ReportsService, aiEvaluationService: AiEvaluationService);
+    private readonly codingQuestionService;
+    constructor(questionsRepository: Repository<Question>, codingSubmissionsRepository: Repository<CodingSubmission>, assessmentsService: AssessmentsService, reportsService: ReportsService, aiEvaluationService: AiEvaluationService, codingQuestionService: CodingQuestionService);
     getQuestion(assessmentId: string, user: JwtPayload): Promise<Question>;
     autosave(assessmentId: string, dto: AutosaveCodingDto, user: JwtPayload): Promise<void>;
     submitCoding(assessmentId: string, dto: SubmitCodingDto, user: JwtPayload): Promise<CodingSubmission>;

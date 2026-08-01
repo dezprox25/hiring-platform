@@ -19,12 +19,19 @@ const login_dto_1 = require("./dto/login.dto");
 const jwt_auth_guard_1 = require("./guards/jwt-auth.guard");
 const jwt_refresh_guard_1 = require("./guards/jwt-refresh.guard");
 const current_user_decorator_1 = require("./decorators/current-user.decorator");
+const public_decorator_1 = require("./decorators/public.decorator");
 let AuthController = class AuthController {
     constructor(authService) {
         this.authService = authService;
     }
     async login(loginDto) {
         return this.authService.login(loginDto);
+    }
+    async forgotPassword(email) {
+        return this.authService.forgotPassword(email);
+    }
+    async resetPassword(body = {}) {
+        return this.authService.resetPassword(body.token, body.password);
     }
     async refresh(user) {
         return this.authService.refreshTokens(user.sub, user.refreshToken);
@@ -35,6 +42,7 @@ let AuthController = class AuthController {
 };
 exports.AuthController = AuthController;
 __decorate([
+    (0, public_decorator_1.Public)(),
     (0, common_1.Post)('login'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     __param(0, (0, common_1.Body)()),
@@ -43,6 +51,25 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "login", null);
 __decorate([
+    (0, public_decorator_1.Public)(),
+    (0, common_1.Post)('forgot-password'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    __param(0, (0, common_1.Body)('email')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "forgotPassword", null);
+__decorate([
+    (0, public_decorator_1.Public)(),
+    (0, common_1.Post)('reset-password'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "resetPassword", null);
+__decorate([
+    (0, public_decorator_1.Public)(),
     (0, common_1.UseGuards)(jwt_refresh_guard_1.JwtRefreshGuard),
     (0, common_1.Post)('refresh'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
