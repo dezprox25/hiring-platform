@@ -5,10 +5,10 @@ import reactRefresh from 'eslint-plugin-react-refresh';
 import globals from 'globals';
 
 export default tseslint.config(
-  { ignores: ['dist', 'node_modules', '.tanstack', 'public', 'e2e', 'dezprox-backend'] },
+  { ignores: ['dist', 'node_modules', '.tanstack', 'public', 'e2e', 'dezprox-backend', 'eslint.config.js'] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
-    files: ['src/**/*.{ts,tsx}', '*.ts', '*.js'],
+    files: ['src/**/*.{ts,tsx}', 'vite.config.ts'],
     languageOptions: {
       ecmaVersion: 2022,
       globals: { ...globals.browser, ...globals.node },
