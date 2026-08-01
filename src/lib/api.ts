@@ -196,4 +196,11 @@ export const aiEvaluationApi = {
   getStatus: (candidateId: string) => api.get(`/ai-evaluations/${candidateId}/status`),
 };
 
+export const usersApi = {
+  findAll: () => api.get('/users'),
+  create: (data: { email: string; role: string; password?: string; is_active?: boolean }) => api.post('/users', data),
+  update: (id: string, data: { role?: string; is_active?: boolean; password?: string }) => api.patch(`/users/${id}`, data),
+  delete: (id: string) => api.delete(`/users/${id}`),
+};
+
 export default api;

@@ -112,4 +112,63 @@ export class UsersService implements OnModuleInit {
     const user = this.usersRepository.create(userData as User);
     return this.usersRepository.save(user);
   }
+
+  /**
+   * Find all users ordered by creation date descending, excluding sensitive fields.
+   */
+  async findAll(): Promise<Omit<User, 'password_hash' | 'refresh_token_hash'>[]> {
+    const users = await this.usersRepository.find({ order: { created_at: 'DESC' } });
+    return users.map((u) => {
+      const { password_hash, refresh_token_hash, ...safeUser } = u;
+      return safeUser as any;
+    });
+  }
+
+  /**
+   * Create a staff or general user with hashed password.
+   */
+  async createUser(dto: { email: string; role: Role; password?: string; is_active?: boolean }): Promise<Omit<User, 'password_hash'>> {
+    const email = dto.email.trim().toLowerCase();
+    const existing = await this.findByEmail(email);
+    if (existing) {
+      throw new Error('User with this email already exists');
+    }
+    const rawPassword = dto.password || 'password123';
+    const passwordHash = await bcrypt.hash(rawPassword, 10);
+    const user = this.usersRepository.create({
+      email,
+      role: dto.role,
+      password_hash: passwordHash,
+      is_active: dto.is_active ?? true,
+    });
+    const saved = await this.usersRepository.save(user);
+    const { password_hash, refresh_token_hash, ...safe } = saved;
+    return safe as any;
+  }
+
+  /**
+   * Update existing user details or reset password.
+   */
+  async updateUser(id: string, dto: { role?: Role; is_active?: boolean; password?: string }): Promise<Omit<User, 'password_hash'>> {
+    const user = await this.findById(id);
+    if (!user) {
+      throw new Error('User not found');
+    }
+    if (dto.role) user.role = dto.role;
+    if (dto.is_active !== undefined) user.is_active = dto.is_active;
+    if (dto.password) {
+      user.password_hash = await bcrypt.hash(dto.password, 10);
+    }
+    const saved = await this.usersRepository.save(user);
+    const { password_hash, refresh_token_hash, ...safe } = saved;
+    return safe as any;
+  }
+
+  /**
+   * Remove or deactivate a user.
+   */
+  async removeUser(id: string): Promise<void> {
+    await this.usersRepository.delete(id);
+  }
 }
+

@@ -1,3 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ComingSoon } from "@/components/coming-soon";
-export const Route = createFileRoute("/manager/settings")({ component: () => <ComingSoon role="manager" title="Settings" /> });
+import { MvpSettings } from "@/components/mvp-settings";
+
+export const Route = createFileRoute("/manager/settings")({
+  head: () => ({ meta: [{ title: "Settings · Dezprox" }] }),
+  component: () => <MvpSettings role="manager" title="Settings" />,
+});
