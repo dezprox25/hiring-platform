@@ -172,7 +172,9 @@ export const assessmentApi = {
   getAssessment: (id: string) => api.get(`/assessments/${id}`),
   getAssessmentStatus: (id: string) => api.get(`/assessments/${id}/status`),
   startAssessment: (id: string) => api.post(`/assessments/${id}/start`),
-  saveMcqAnswer: (id: string, data: { questionId: string; optionIndex: number }) => 
+  getMcqQuestions: (id: string) => api.get(`/assessments/${id}/mcq/questions`),
+  getTypingPassage: (id: string) => api.get(`/assessments/${id}/typing/passage`),
+  saveMcqAnswer: (id: string, data: { answers: { questionId: string; selectedOption: string }[] }) => 
     api.post(`/assessments/${id}/mcq/submit`, data),
   saveTypingResult: (id: string, data: { wpm: number; accuracy: number; mistakes: number; text: string; timeTakenSeconds: number }) => 
     api.post(`/assessments/${id}/typing/submit`, data),

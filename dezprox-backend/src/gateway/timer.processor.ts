@@ -36,8 +36,15 @@ export class TimerProcessor extends WorkerHost {
       const remaining = this.gatewayService.getSecondsRemaining(assessment);
 
       if (remaining <= 0) {
-        this.logger.warn(`Time is up for assessment ${assessmentId}. Triggering force submit.`);
+        this.logger.warn(`Time is up for assessment ${assessmentId}. Triggering server-authoritative round advance and force submit.`);
         this.gateway.emitForceSubmit(assessmentId, round);
+        // Server-authoritative transition: advance round on server immediately
+        try {
+          await this.assessmentsService.advanceRound(assessmentId);
+        } catch (advanceErr) {
+          const advMsg = advanceErr instanceof Error ? advanceErr.message : 'Unknown error';
+          this.logger.warn(`Could not advance round automatically for ${assessmentId}: ${advMsg}`);
+        }
       } else {
         // This shouldn't happen often if delay was calculated correctly, 
         // but could happen if server time drifted. Re-queue if needed.

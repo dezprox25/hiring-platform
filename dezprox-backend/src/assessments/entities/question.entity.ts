@@ -47,12 +47,12 @@ export class Question {
   @Column({ default: true })
   isActive: boolean;
 
-  @Column({ type: 'uuid', name: 'created_by_id' })
-  createdById: string;
+  @Column({ type: 'uuid', name: 'created_by_id', nullable: true })
+  createdById: string | null;
 
-  @ManyToOne(() => User, { nullable: false })
+  @ManyToOne(() => User, { nullable: true })
   @JoinColumn({ name: 'created_by_id' })
-  createdBy: User;
+  createdBy: User | null;
 
   @CreateDateColumn()
   createdAt: Date;

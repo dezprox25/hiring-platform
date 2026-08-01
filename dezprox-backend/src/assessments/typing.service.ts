@@ -6,10 +6,12 @@ import { AssessmentsService } from './assessments.service';
 import { SubmitTypingDto } from './dto/submit-typing.dto';
 import { TypingResult } from './entities/typing-result.entity';
 import { AssessmentStatus } from './enums/assessment-status.enum';
+import { Question } from './entities/question.entity';
+import { QuestionType } from './enums/question-type.enum';
 
 @Injectable()
 export class TypingService {
-  private readonly passages = [
+  private readonly defaultPassages = [
     'Clear communication helps teams ship reliable software with fewer misunderstandings and faster feedback loops.',
     'A strong developer writes code that is easy to read, easy to maintain, and easy to improve over time.',
     'Hiring decisions improve when technical skill, collaboration, and ownership are reviewed together instead of separately.',
@@ -25,6 +27,8 @@ export class TypingService {
   constructor(
     @InjectRepository(TypingResult)
     private readonly typingResultsRepository: Repository<TypingResult>,
+    @InjectRepository(Question)
+    private readonly questionsRepository: Repository<Question>,
     private readonly assessmentsService: AssessmentsService,
   ) {}
 
@@ -41,7 +45,7 @@ export class TypingService {
       throw new BadRequestException('Typing round is not active');
     }
 
-    return { passage: this.resolvePassage(assessmentId) };
+    return { passage: await this.resolvePassage(assessmentId) };
   }
 
   /**
@@ -90,7 +94,7 @@ export class TypingService {
 
     this.assessmentsService.validateTimeLimit(assessment, 'typing');
 
-    const expectedPassage = this.resolvePassage(assessmentId);
+    const expectedPassage = await this.resolvePassage(assessmentId);
     const metrics = this.calculateWpm(dto.typedText, expectedPassage, dto.timeTakenSeconds);
     const existing = await this.typingResultsRepository.findOne({ where: { assessmentId } });
     const result = existing ?? this.typingResultsRepository.create({ assessmentId });
@@ -109,9 +113,15 @@ export class TypingService {
     return saved;
   }
 
-  private resolvePassage(assessmentId: string): string {
+  private async resolvePassage(assessmentId: string): Promise<string> {
+    const dbPassages = await this.questionsRepository.find({
+      where: { type: QuestionType.TYPING, isActive: true },
+      order: { id: 'ASC' },
+    });
+
+    const list = dbPassages.length > 0 ? dbPassages.map((q) => q.text) : this.defaultPassages;
     const numericSeed = Number.parseInt(assessmentId.replace(/-/g, '').slice(0, 8), 16);
-    const index = Number.isNaN(numericSeed) ? 0 : numericSeed % this.passages.length;
-    return this.passages[index];
+    const index = Number.isNaN(numericSeed) ? 0 : numericSeed % list.length;
+    return list[index];
   }
 }

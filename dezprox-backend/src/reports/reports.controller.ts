@@ -72,10 +72,7 @@ export class ReportsController {
     @Param('id') id: string,
     @CurrentUser() user: JwtPayload,
   ) {
-    // Note: ReportsService.findByCandidateId is actually used for report detail retrieval by ID too in many places, 
-    // but here we align with findByCandidateId for consistent permission checks.
-    // If a dedicated findById is needed, it should be implemented in ReportsService.
-    return this.reportsService.findByCandidateId(id, user); 
+    return this.reportsService.findById(id, user); 
   }
 
   @Patch(':id/release')

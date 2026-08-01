@@ -22,6 +22,7 @@ import { Role } from '../common/enums/role.enum';
 import { assertOwnership } from '../common/helpers/ownership.helper';
 import { User } from '../users/entities/user.entity';
 import { AssessmentGateway } from '../gateway/assessment.gateway';
+import { AssessmentsService } from '../assessments/assessments.service';
 
 export interface CandidateResponse { 
   id: string; 
@@ -49,6 +50,8 @@ export class CandidatesService {
     private dataSource: DataSource,
     @Inject(forwardRef(() => AssessmentGateway))
     private readonly gateway: AssessmentGateway,
+    @Inject(forwardRef(() => AssessmentsService))
+    private readonly assessmentsService: AssessmentsService,
   ) {}
 
   /**
@@ -116,6 +119,13 @@ export class CandidatesService {
       const savedCandidate = await queryRunner.manager.save(candidate);
 
       await queryRunner.commitTransaction();
+
+      // Provision an assessment for the new candidate
+      try {
+        await this.assessmentsService.create(savedCandidate.id);
+      } catch {
+        // Assessment creation is best-effort; candidate was already created
+      }
 
       // Send invite if we created a new user or if we want to re-invite
       if (password) {

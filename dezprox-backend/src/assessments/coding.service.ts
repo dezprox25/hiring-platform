@@ -12,6 +12,7 @@ import { QuestionType } from './enums/question-type.enum';
 import { ReportsService } from '../reports/reports.service';
 import { ManagerReviewDto } from './dto/manager-review.dto';
 import { AiEvaluationService } from '../ai-evaluation/ai-evaluation.service';
+import { CodingQuestionService } from '../question-bank/coding-question.service';
 
 @Injectable()
 export class CodingService {
@@ -23,6 +24,7 @@ export class CodingService {
     private readonly assessmentsService: AssessmentsService,
     private readonly reportsService: ReportsService,
     private readonly aiEvaluationService: AiEvaluationService,
+    private readonly codingQuestionService: CodingQuestionService,
   ) {}
 
   /**
@@ -50,13 +52,47 @@ export class CodingService {
 
     // Otherwise, pick a random coding question matching the role
     const category = assessment.candidate.roleApplied;
-    let question = await this.questionsRepository
-      .createQueryBuilder('question')
-      .where('question.type = :type', { type: QuestionType.CODING })
-      .andWhere('question.isActive = :isActive', { isActive: true })
-      .andWhere('LOWER(question.category) = LOWER(:category)', { category })
-      .orderBy('RANDOM()')
-      .getOne();
+
+    // Try the Question Bank (coding_questions) first
+    let codingBankQuestion = null;
+    try {
+      codingBankQuestion = await this.codingQuestionService.findOneActive(category as any);
+    } catch {
+      // Fallback if Question Bank service fails
+    }
+
+    let question: Question | null = null;
+    if (codingBankQuestion) {
+      // Create or find a corresponding Question record so CodingSubmission FK works
+      question = await this.questionsRepository.findOne({
+        where: { id: codingBankQuestion.id },
+      });
+      if (!question) {
+        // Create a synced Question record from the bank question
+        question = this.questionsRepository.create({
+          type: QuestionType.CODING,
+          category: category,
+          difficulty: codingBankQuestion.difficulty as any,
+          text: codingBankQuestion.prompt,
+          options: null,
+          correctAnswer: null,
+          codeStarter: null,
+          isActive: true,
+          createdById: assessment.candidate.user?.id || assessment.candidate.userId,
+        });
+        question = await this.questionsRepository.save(question);
+      }
+    }
+
+    if (!question) {
+      question = await this.questionsRepository
+        .createQueryBuilder('question')
+        .where('question.type = :type', { type: QuestionType.CODING })
+        .andWhere('question.isActive = :isActive', { isActive: true })
+        .andWhere('LOWER(question.category) = LOWER(:category)', { category })
+        .orderBy('RANDOM()')
+        .getOne();
+    }
 
     if (!question) {
       question = await this.questionsRepository

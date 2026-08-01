@@ -15,6 +15,7 @@ import { AssessmentStatus } from './enums/assessment-status.enum';
 import { McqAnswer } from './entities/mcq-answer.entity';
 import { Question } from './entities/question.entity';
 import { QuestionType } from './enums/question-type.enum';
+import { McqQuestionService } from '../question-bank/mcq-question.service';
 
 export interface CandidateMcqQuestion {
   id: string;
@@ -37,6 +38,7 @@ export class McqService {
     private readonly mcqAnswersRepository: Repository<McqAnswer>,
     private readonly assessmentsService: AssessmentsService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    private readonly mcqQuestionService: McqQuestionService,
   ) {}
 
   /**
@@ -53,23 +55,70 @@ export class McqService {
     }
 
     const category = assessment.candidate.roleApplied;
-    let questions = await this.questionsRepository
-      .createQueryBuilder('question')
-      .where('question.type = :type', { type: QuestionType.MCQ })
-      .andWhere('question.isActive = :isActive', { isActive: true })
-      .andWhere('LOWER(question.category) = LOWER(:category)', { category })
-      .orderBy('RANDOM()')
-      .take(15)
-      .getMany();
 
-    if (questions.length === 0) {
-      questions = await this.questionsRepository
+    // Try to source questions from the Question Bank (mcq_questions) first
+    let bankQuestions = [];
+    try {
+      bankQuestions = await this.mcqQuestionService.findForAssessment(category, 15);
+    } catch {
+      // Fallback if Question Bank service fails
+    }
+
+    let questions: any[];
+    if (bankQuestions.length > 0) {
+      // Sync Question Bank questions into questions table so submitAnswers and FKs work cleanly
+      for (const bq of bankQuestions) {
+        const existing = await this.questionsRepository.findOne({ where: { id: bq.id } });
+        if (!existing) {
+          await this.questionsRepository.save(
+            this.questionsRepository.create({
+              id: bq.id,
+              type: QuestionType.MCQ,
+              category: bq.topic || category,
+              difficulty: bq.difficulty as any,
+              text: bq.questionText,
+              options: bq.options,
+              correctAnswer: bq.correctAnswer,
+              isActive: true,
+            })
+          );
+        }
+      }
+
+      // Map Question Bank questions to the format expected by the live engine
+      questions = this.shuffle([...bankQuestions]).map(q => ({
+        id: q.id,
+        type: QuestionType.MCQ,
+        category: q.topic || category,
+        difficulty: q.difficulty,
+        text: q.questionText,
+        options: q.options,
+        correctAnswer: q.correctAnswer,
+        codeStarter: null,
+        createdAt: q.createdAt,
+        updatedAt: q.updatedAt,
+      }));
+    } else {
+      // Fallback to the legacy questions table
+      let rawQuestions = await this.questionsRepository
         .createQueryBuilder('question')
         .where('question.type = :type', { type: QuestionType.MCQ })
         .andWhere('question.isActive = :isActive', { isActive: true })
+        .andWhere('LOWER(question.category) = LOWER(:category)', { category })
         .orderBy('RANDOM()')
         .take(15)
         .getMany();
+
+      if (rawQuestions.length === 0) {
+        rawQuestions = await this.questionsRepository
+          .createQueryBuilder('question')
+          .where('question.type = :type', { type: QuestionType.MCQ })
+          .andWhere('question.isActive = :isActive', { isActive: true })
+          .orderBy('RANDOM()')
+          .take(15)
+          .getMany();
+      }
+      questions = rawQuestions;
     }
 
     const cacheEntry: Record<string, string[]> = {};

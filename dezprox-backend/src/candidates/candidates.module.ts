@@ -6,6 +6,7 @@ import { Candidate } from './entities/candidate.entity';
 import { UsersModule } from '../users/users.module';
 import { MailModule } from '../mail/mail.module';
 import { GatewayModule } from '../gateway/gateway.module';
+import { AssessmentsModule } from '../assessments/assessments.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { GatewayModule } from '../gateway/gateway.module';
     UsersModule,
     MailModule,
     forwardRef(() => GatewayModule),
+    forwardRef(() => AssessmentsModule),
   ],
   controllers: [CandidatesController],
   providers: [CandidatesService],

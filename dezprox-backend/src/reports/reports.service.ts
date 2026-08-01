@@ -238,7 +238,27 @@ export class ReportsService {
   async findByCandidateId(candidateId: string, user: JwtPayload): Promise<any> {
     const report = await this.reportsRepository.findOne({
       where: { candidateId },
-      relations: ['candidate', 'candidate.user', 'assessment', 'feedbacks', 'feedbacks.user'],
+      relations: ['candidate', 'candidate.user', 'assessment', 'feedbacks', 'feedbacks.manager'],
+    });
+
+    if (!report) throw new NotFoundException('Report not found');
+
+    assertOwnership(user.sub, report.candidate.user.id, user.role);
+
+    if (user.role === Role.CANDIDATE && !report.isResultReleased) {
+      throw new BadRequestException('Result not released yet');
+    }
+
+    return this.mapToResponse(report, user.role);
+  }
+
+  /**
+   * Fetches a single report by its primary key ID.
+   */
+  async findById(id: string, user: JwtPayload): Promise<any> {
+    const report = await this.reportsRepository.findOne({
+      where: { id },
+      relations: ['candidate', 'candidate.user', 'assessment', 'feedbacks', 'feedbacks.manager'],
     });
 
     if (!report) throw new NotFoundException('Report not found');
