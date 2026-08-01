@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, lazy, Suspense } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Play, Send, Terminal, Loader2, Save } from "lucide-react";
-import Editor from "@monaco-editor/react";
+const Editor = lazy(() => import("@monaco-editor/react"));
 import { motion, AnimatePresence } from "framer-motion";
 import { assessmentApi, unwrapData } from "@/lib/api";
 import { toast } from "sonner";
@@ -138,22 +138,24 @@ export function CodingRound({ assessmentId, onComplete }: { assessmentId: string
             </div>
           </CardHeader>
           <CardContent className="p-0">
-            <Editor
-              height="450px"
-              language={lang}
-              value={code}
-              onChange={(v) => setCode(v ?? "")}
-              theme={typeof document !== "undefined" && document.documentElement.classList.contains("dark") ? "vs-dark" : "light"}
-              options={{ 
-                minimap: { enabled: false }, 
-                fontSize: 14, 
-                padding: { top: 20, bottom: 20 }, 
-                lineNumbers: "on",
-                roundedSelection: true,
-                scrollBeyondLastLine: false,
-                fontFamily: "JetBrains Mono, monospace"
-              }}
-            />
+            <Suspense fallback={<div className="h-[450px] flex items-center justify-center text-sm font-semibold text-muted-foreground"><Loader2 className="h-5 w-5 animate-spin mr-2" /> Loading IDE...</div>}>
+              <Editor
+                height="450px"
+                language={lang}
+                value={code}
+                onChange={(v) => setCode(v ?? "")}
+                theme={typeof document !== "undefined" && document.documentElement.classList.contains("dark") ? "vs-dark" : "light"}
+                options={{ 
+                  minimap: { enabled: false }, 
+                  fontSize: 14, 
+                  padding: { top: 20, bottom: 20 }, 
+                  lineNumbers: "on",
+                  roundedSelection: true,
+                  scrollBeyondLastLine: false,
+                  fontFamily: "JetBrains Mono, monospace"
+                }}
+              />
+            </Suspense>
           </CardContent>
         </Card>
 

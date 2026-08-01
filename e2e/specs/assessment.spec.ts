@@ -1,7 +1,7 @@
 import { test, expect } from '../fixtures/test-fixtures';
 
 test.describe('Candidate Assessment Flow', () => {
-  test.skip('should complete a full assessment flow', async ({ page, assessmentPage }) => {
+  test('should complete a full assessment flow', async ({ page, assessmentPage }) => {
     // In a real test, we would log in as a candidate first
     await page.goto('/candidate/assessment/test-id');
 
@@ -27,7 +27,7 @@ test.describe('Candidate Assessment Flow', () => {
     await expect(page.locator('text=Assessment Completed')).toBeVisible();
   });
 
-  test.skip('should maintain socket connection and handle reconnect', async ({ page }) => {
+  test('should maintain socket connection and handle reconnect', async ({ page, assessmentPage }) => {
     await page.goto('/candidate/assessment/test-id');
     await assessmentPage.start();
 

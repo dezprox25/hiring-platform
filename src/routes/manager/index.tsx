@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { analyticsApi, reportsApi, unwrapData } from "@/lib/api";
+import { reportsApi, unwrapData } from "@/lib/api";
+import { useDashboardData } from "@/hooks/use-dashboard-data";
 import { DashboardLayout } from "@/components/dashboard-layout";
 import { StatCard } from "@/components/stat-card";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -27,20 +28,7 @@ export const Route = createFileRoute("/manager/")({
 });
 
 function ManagerDashboard() {
-  const {
-    data: dash,
-    isLoading: dashLoading,
-    isError: dashError,
-    refetch: refetchDash,
-  } = useQuery({
-    queryKey: ["analytics", "dashboard-full", "manager"],
-    queryFn: async () => unwrapData<AnalyticsDashboardPayload>(await analyticsApi.getDashboardData()),
-    retry: 2,
-    staleTime: 60_000,
-  });
-
-  const stats: DashboardStats | undefined = dash?.summary;
-  const funnel = dash?.trends?.funnel ?? [];
+  const { dashLoading, dashError, refetchDash, summary: stats, funnel } = useDashboardData();
 
   const { data: reviewQueue, isLoading: queueLoading } = useQuery({
     queryKey: ["reports", "review-queue"],

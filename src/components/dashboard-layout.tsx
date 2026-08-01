@@ -56,9 +56,9 @@ const roleMeta: Record<Role, { name: string; email: string; label: string }> = {
   hr: { name: "Neha Gupta", email: "neha@dezprox.com", label: "HR Lead" },
   candidate: { name: "Aarav Sharma", email: "aarav@dezprox.com", label: "Candidate" },
 };
-
 import { authApi } from "@/lib/api";
 import { getAuthDisplayName, getStoredAuthUser, type StoredAuthUser } from "@/lib/auth-user";
+import { NotificationCenter } from "@/components/notification-center";
 
 function AppSidebar({ role, onLogout }: { role: Role; onLogout: () => void }) {
   const path = useRouterState({ select: (s) => s.location.pathname });
@@ -213,7 +213,7 @@ export function DashboardLayout({ children, role, title }: { children: ReactNode
               <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
               <Input placeholder="Search..." className="h-8 w-64 rounded-xl pl-8 text-xs bg-muted/50 border-none focus-visible:ring-1" />
             </div>
-            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg"><Bell className="h-4 w-4" /></Button>
+            <NotificationCenter />
             <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg" onClick={handleLogout}><LogOut className="h-4 w-4 text-destructive" /></Button>
           </div>
         </header>

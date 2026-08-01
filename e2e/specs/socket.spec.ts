@@ -1,7 +1,7 @@
 import { test, expect } from '../fixtures/test-fixtures';
 
 test.describe('Socket.IO Resilience', () => {
-  test.skip('should reconnect automatically after connection loss', async ({ page }) => {
+  test('should reconnect automatically after connection loss', async ({ page }) => {
     await page.goto('/candidate/assessment/test-id');
     
     // Check initial connection
@@ -18,7 +18,7 @@ test.describe('Socket.IO Resilience', () => {
     await expect(page.locator('text=Connected')).toBeVisible();
   });
 
-  test.skip('should prevent duplicate socket connections on refresh', async ({ page }) => {
+  test('should prevent duplicate socket connections on refresh', async ({ page }) => {
     await page.goto('/candidate/assessment/test-id');
     await page.reload();
     

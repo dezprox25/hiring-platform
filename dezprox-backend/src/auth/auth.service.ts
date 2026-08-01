@@ -2,6 +2,7 @@ import {
   Injectable,
   UnauthorizedException,
   ForbiddenException,
+  BadRequestException,
 } from '@nestjs/common';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -9,6 +10,7 @@ import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service';
 import { LoginDto } from './dto/login.dto';
 import { Role } from '../common/enums/role.enum';
+import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class AuthService {
@@ -16,6 +18,7 @@ export class AuthService {
     private usersService: UsersService,
     private jwtService: JwtService,
     private configService: ConfigService,
+    private mailService: MailService,
   ) {}
 
   /**
@@ -76,6 +79,48 @@ export class AuthService {
     await this.updateRefreshToken(user.id, tokens.refreshToken);
 
     return tokens;
+  }
+
+  /**
+   * Send password reset email if account exists
+   */
+  async forgotPassword(email?: string) {
+    if (!email) throw new BadRequestException('Email address is required');
+    const user = await this.usersService.findByEmail(email);
+    if (user) {
+      const token = await this.jwtService.signAsync(
+        { sub: user.id, purpose: 'password-reset' },
+        {
+          secret: this.configService.get<string>('JWT_SECRET') || 'your-secret-key-at-least-32-chars',
+          expiresIn: '1h',
+        },
+      );
+      await this.mailService.sendPasswordReset(user.email, token);
+    }
+    return {
+      message: 'If an account matching that email address exists, password reset instructions have been dispatched.',
+    };
+  }
+
+  /**
+   * Verify token and update user password
+   */
+  async resetPassword(token?: string, newPassword?: string) {
+    if (!token || !newPassword) {
+      throw new BadRequestException('Reset token and new password are required');
+    }
+    try {
+      const payload = await this.jwtService.verifyAsync(token, {
+        secret: this.configService.get<string>('JWT_SECRET') || 'your-secret-key-at-least-32-chars',
+      });
+      if (payload.purpose !== 'password-reset' || !payload.sub) {
+        throw new BadRequestException('Invalid reset token purpose');
+      }
+      await this.usersService.updateUser(payload.sub, { password: newPassword });
+      return { message: 'Your password has been updated successfully. You may now sign in.' };
+    } catch (err: any) {
+      throw new BadRequestException('The reset token is invalid or has expired. Please request a new link.');
+    }
   }
 
   private async updateRefreshToken(userId: string, refreshToken: string) {

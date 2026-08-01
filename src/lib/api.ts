@@ -88,6 +88,8 @@ api.interceptors.response.use(
 
 export const authApi = {
   login: (data: any) => api.post('/auth/login', data),
+  forgotPassword: (email: string) => api.post('/auth/forgot-password', { email }),
+  resetPassword: (data: { token: string; password: string }) => api.post('/auth/reset-password', data),
   refresh: (refreshToken: string) => api.post('/auth/refresh', { refreshToken }),
   logout: () => api.post('/auth/logout'),
 };

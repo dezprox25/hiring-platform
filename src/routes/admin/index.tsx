@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
-import { analyticsApi, candidatesApi, reportsApi, unwrapData } from "@/lib/api";
+import { useDashboardData } from "@/hooks/use-dashboard-data";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -59,48 +58,22 @@ const CHART_COLORS = [
 function AdminDashboard() {
   const user = getStoredAuthUser();
   const firstName = getAuthFirstName(user, "admin");
-
   const {
-    data: dash,
-    isLoading: dashLoading,
-    isError: dashError,
-    refetch: refetchDash,
+    dashLoading,
+    dashError,
+    refetchDash,
     failureReason,
-  } = useQuery({
-    queryKey: ["analytics", "dashboard-full"],
-    queryFn: async () =>
-      unwrapData<AnalyticsDashboardPayload>(await analyticsApi.getDashboardData()),
-    retry: 2,
-    staleTime: 60_000,
-  });
-
-  const summary: DashboardStats | undefined = dash?.summary;
-  const topicChart: ChartPoint[] =
-    dash?.trends?.topicPerformance?.map((t) => ({ label: t.topic, value: t.score })) ?? [];
-  const passFail: PieSlice[] | undefined = dash?.trends?.passFailRatio;
-  const trends: TrendPoint[] | undefined = dash?.trends?.applicationsOverTime;
-  const leaderboard = dash?.trends?.leaderboard ?? [];
-  const funnel = dash?.trends?.funnel ?? [];
-
-  const { data: recentCandidates, isLoading: candidatesLoading } = useQuery({
-    queryKey: ["candidates", "recent", { limit: 6 }],
-    queryFn: async () => {
-      const page = unwrapData(await candidatesApi.findAll({ limit: 6, page: 1 }));
-      return page.data;
-    },
-    retry: 2,
-    staleTime: 30_000,
-  });
-
-  const { data: recentReports, isLoading: reportsLoading } = useQuery({
-    queryKey: ["reports", "recent", { limit: 5 }],
-    queryFn: async () => {
-      const page = unwrapData(await reportsApi.findAll({ limit: 5, page: 1 }));
-      return page.data;
-    },
-    retry: 2,
-    staleTime: 30_000,
-  });
+    summary,
+    topicChart,
+    passFail,
+    trends,
+    leaderboard,
+    funnel,
+    recentCandidates,
+    candidatesLoading,
+    recentReports,
+    reportsLoading,
+  } = useDashboardData();
 
   return (
     <DashboardLayout role="admin" title="Dashboard">

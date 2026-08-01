@@ -48,9 +48,9 @@ import {
   ThumbsDown,
   RotateCcw,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo, useState, lazy, Suspense } from "react";
 import { toast } from "sonner";
-import { Editor } from "@monaco-editor/react";
+const Editor = lazy(() => import("@monaco-editor/react"));
 import type { ReportDetailResponse } from "@/types/api";
 import { isAxiosError } from "axios";
 
@@ -390,20 +390,22 @@ function ReviewDetail({ id }: { id: string }) {
               </Badge>
             </CardHeader>
             <CardContent className="h-[500px] p-0">
-              <Editor
-                height="100%"
-                language={lang}
-                value={submission?.code || "// No code submitted"}
-                theme="vs-dark"
-                loading={<div className="flex h-full items-center justify-center text-sm text-muted-foreground">Loading editor…</div>}
-                options={{
-                  readOnly: true,
-                  minimap: { enabled: false },
-                  fontSize: 14,
-                  padding: { top: 20 },
-                  scrollBeyondLastLine: false,
-                }}
-              />
+              <Suspense fallback={<div className="flex h-full items-center justify-center text-sm text-muted-foreground"><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Loading editor…</div>}>
+                <Editor
+                  height="100%"
+                  language={lang}
+                  value={submission?.code || "// No code submitted"}
+                  theme="vs-dark"
+                  loading={<div className="flex h-full items-center justify-center text-sm text-muted-foreground">Loading editor…</div>}
+                  options={{
+                    readOnly: true,
+                    minimap: { enabled: false },
+                    fontSize: 14,
+                    padding: { top: 20 },
+                    scrollBeyondLastLine: false,
+                  }}
+                />
+              </Suspense>
             </CardContent>
           </Card>
 

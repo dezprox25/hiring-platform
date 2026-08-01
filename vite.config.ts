@@ -46,5 +46,16 @@ export default defineConfig(({ mode }) => {
       port: 3000,
       proxy,
     },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            monaco: ['@monaco-editor/react'],
+            recharts: ['recharts'],
+            vendor: ['react', 'react-dom', 'lucide-react', 'framer-motion'],
+          },
+        },
+      },
+    },
   };
 });

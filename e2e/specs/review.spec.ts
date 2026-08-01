@@ -1,7 +1,7 @@
 import { test, expect } from '../fixtures/test-fixtures';
 
 test.describe('Manager Review Flow', () => {
-  test.skip('should approve a candidate after review', async ({ reviewPage, page }) => {
+  test('should approve a candidate after review', async ({ reviewPage, page }) => {
     // Login as manager first
     await reviewPage.goto();
 

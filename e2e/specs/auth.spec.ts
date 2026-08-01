@@ -16,15 +16,17 @@ test.describe('Authentication Flow', () => {
     await expect(page).toHaveURL(/\/login/);
   });
 
-  // These tests would require valid credentials to pass
-  // In a real CI environment, these would be provided via environment variables
-  test.skip('should login successfully as admin', async ({ loginPage, page }) => {
-    await loginPage.login(process.env.TEST_ADMIN_EMAIL!, process.env.TEST_ADMIN_PASSWORD!);
+  test('should login successfully as admin', async ({ loginPage, page }) => {
+    const email = process.env.TEST_ADMIN_EMAIL || 'admin@dezprox.com';
+    const password = process.env.TEST_ADMIN_PASSWORD || 'admin123';
+    await loginPage.login(email, password);
     await expect(page).toHaveURL(/\/admin/);
   });
 
-  test.skip('should logout successfully', async ({ loginPage, dashboardPage, page }) => {
-    await loginPage.login(process.env.TEST_ADMIN_EMAIL!, process.env.TEST_ADMIN_PASSWORD!);
+  test('should logout successfully', async ({ loginPage, dashboardPage, page }) => {
+    const email = process.env.TEST_ADMIN_EMAIL || 'admin@dezprox.com';
+    const password = process.env.TEST_ADMIN_PASSWORD || 'admin123';
+    await loginPage.login(email, password);
     await dashboardPage.logout();
     await expect(page).toHaveURL(/\/login/);
   });
