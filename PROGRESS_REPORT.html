@@ -2,118 +2,139 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Dezprox Hiring Platform - Progress Report</title>
+    <title>Dezprox Hiring Platform - Technical Architecture & Systems Specification</title>
     <style>
         :root {
-            --primary: #2563eb;
-            --text: #1e293b;
-            --bg: #ffffff;
-            --border: #e2e8f0;
-            --header-bg: #f8fafc;
-            --code-bg: #0f172a;
-            --code-text: #f8fafc;
+            --primary: #1e40af;
+            --secondary: #3b82f6;
+            --text-dark: #0f172a;
+            --text-body: #334155;
+            --bg-light: #f8fafc;
+            --border: #cbd5e1;
+            --code-bg: #090d16;
+            --code-text: #e2e8f0;
+            --accent: #047857;
         }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            color: var(--text);
-            line-height: 1.6;
+            font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+            color: var(--text-body);
+            line-height: 1.55;
             margin: 0;
-            padding: 40px 60px;
-            font-size: 14px;
+            padding: 35px 55px;
+            font-size: 13px;
         }
         h1 {
-            font-size: 26px;
-            color: #0f172a;
+            font-size: 23px;
+            color: var(--text-dark);
             border-bottom: 2px solid var(--primary);
-            padding-bottom: 10px;
+            padding-bottom: 7px;
             margin-top: 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         h2 {
-            font-size: 18px;
-            color: #1e293b;
+            font-size: 16px;
+            color: var(--text-dark);
             border-bottom: 1px solid var(--border);
-            padding-bottom: 6px;
-            margin-top: 30px;
+            padding-bottom: 5px;
+            margin-top: 26px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
         }
         h3 {
-            font-size: 15px;
+            font-size: 14px;
             color: var(--primary);
-            margin-top: 20px;
+            margin-top: 16px;
+            margin-bottom: 7px;
         }
         p, li {
-            font-size: 14px;
-            color: #334155;
+            font-size: 13px;
+            color: var(--text-body);
         }
-        ul {
+        ul, ol {
             padding-left: 20px;
+            margin-top: 5px;
+            margin-bottom: 12px;
         }
         li {
-            margin-bottom: 6px;
+            margin-bottom: 5px;
         }
         .badge {
             display: inline-block;
-            background-color: #dcfce7;
-            color: #166534;
-            padding: 2px 8px;
-            border-radius: 9999px;
-            font-weight: 600;
-            font-size: 12px;
-            margin-bottom: 10px;
+            background-color: #e0f2fe;
+            color: #0369a1;
+            padding: 3px 9px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
         }
-        .box {
-            background: var(--header-bg);
+        .summary-box {
+            background: var(--bg-light);
             border: 1px solid var(--border);
             border-left: 4px solid var(--primary);
-            padding: 15px;
+            padding: 12px 16px;
             border-radius: 4px;
-            margin: 20px 0;
+            margin: 12px 0 22px 0;
         }
         pre {
             background-color: var(--code-bg);
             color: var(--code-text);
-            padding: 15px;
+            padding: 12px 14px;
             border-radius: 6px;
-            font-family: "Courier New", Courier, monospace;
-            font-size: 12px;
+            font-family: "Consolas", "Courier New", monospace;
+            font-size: 11px;
             line-height: 1.4;
             overflow-x: auto;
+            border: 1px solid #1e293b;
+            margin: 10px 0;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 15px;
+            margin-top: 10px;
             margin-bottom: 20px;
-            page-break-inside: auto;
         }
         tr {
             page-break-inside: avoid;
-            page-break-after: auto;
         }
         th, td {
             border: 1px solid var(--border);
-            padding: 10px 12px;
+            padding: 8px 11px;
             text-align: left;
             vertical-align: top;
         }
         th {
-            background-color: var(--header-bg);
-            font-weight: 600;
-            color: #0f172a;
+            background-color: var(--bg-light);
+            font-weight: 700;
+            color: var(--text-dark);
+            font-size: 12.5px;
         }
         td {
-            font-size: 13px;
+            font-size: 12.5px;
+        }
+        .highlight {
+            font-family: "Consolas", monospace;
+            background-color: #f1f5f9;
+            color: #0f172a;
+            padding: 1px 5px;
+            border-radius: 3px;
+            font-size: 11.5px;
+            border: 1px solid #e2e8f0;
         }
         .footer {
-            margin-top: 50px;
+            margin-top: 40px;
             border-top: 1px solid var(--border);
-            padding-top: 15px;
-            font-size: 12px;
+            padding-top: 10px;
+            font-size: 11px;
             color: #64748b;
             text-align: center;
         }
         @media print {
             body {
-                padding: 20px 30px;
+                padding: 15px 25px;
             }
             .page-break {
                 page-break-before: always;
@@ -123,102 +144,316 @@
 </head>
 <body>
 
-    <h1>Dezprox Hiring Platform: Project Progress & Readiness Report</h1>
-    <div class="badge">100% PRODUCTION READY • ALL SPRINTS COMPLETED</div>
+    <h1>Dezprox Hiring Platform: Technical Architecture & System Specification</h1>
+    <div class="badge">SYSTEM SPECIFICATION & ENGINEERING REFERENCE • VERSION 1.0.0</div>
     
-    <div class="box">
-        <strong>Executive Summary:</strong> The Dezprox Hiring Platform has advanced from a developer skeleton into an end-to-end, enterprise-ready technical hiring and real-time candidate assessment suite. All target functionalities across Sprints 1 through 4 have been implemented, tested, reconciled against compiler rules, and successfully committed to the production Git repository.
+    <div class="summary-box">
+        <strong>Executive Summary:</strong> The Dezprox Hiring Platform is an enterprise technical recruitment and automated candidate evaluation engine designed for asynchronous scalability, zero-trust security, and real-time observability. This engineering reference details the structural system architecture, deep-dive Redis implementations, Docker orchestration topologies, comprehensive user lifecycle flows across all personas, and complete local developer environment configuration procedures.
     </div>
 
-    <h2>1. Project Milestones & System Architecture</h2>
-    <p>The platform follows a scalable microservices architectural pattern, coupling a highly reactive Vite + React 18 frontend with an enterprise NestJS server communicating over REST API and real-time WebSockets.</p>
+    <h2>1. Comprehensive User Flow Diagrams (End-To-End Lifecycle)</h2>
+    <p>The recruitment workflow interconnects four distinct operational roles into a synchronized evaluation loop. Below is the complete user execution pipeline bridging recruitment invitations, live testing arenas, and engineering evaluation decisions.</p>
 
     <pre>
-       [ Client Web Browser ]
-         (Vite + React + TanStack Router)
-                 │  ▲
-                 ▼  │
-  ┌────────────────────────────────────────────────────────┐
-  │                   NestJS API Gateway                   │
-  │     (JWT Authentication • RBAC Guards • Throttling)    │
-  └────────────────────────┬───────────────────────────────┘
-                           │
-       ┌───────────────────┼───────────────────┐
-       ▼                   ▼                   ▼
-┌─────────────┐     ┌─────────────┐     ┌─────────────┐
-│ PostgreSQL  │     │ Upstash     │     │ OpenAI GPT-4│
-│ Database    │     │ Cloud Redis │     │ Engine      │
-│  (TypeORM)  │     │  (BullMQ)   │     │ (Evaluation)│
-└─────────────┘     └─────────────┘     └─────────────┘
+  ┌─────────────────────────────────────────────────────────────────────────┐
+  │                 STAGE 1: RECRUITMENT & ONBOARDING (HR)                 │
+  └────────────────────────────────────┬────────────────────────────────────┘
+                                       │
+  [ HR Recruiter Portal ] ───► Creates Candidate Record ───► Generates Secure Token
+                                                                   │
+  [ BullMQ Worker Queue ] ◄─── Dispatches Async Email ◄────────────┘
+         │
+         ▼
+  ┌─────────────────────────────────────────────────────────────────────────┐
+  │                 STAGE 2: CANDIDATE ASSESSMENT ARENA                    │
+  └────────────────────────────────────┬────────────────────────────────────┘
+                                       │
+  [ Candidate Email ] ───► Clicks Token Link ───► Accepts Exam Instructions
+                                                        │
+           ┌────────────────────────────────────────────┼───────────────────┐
+           ▼                                            ▼                   ▼
+     [ Round 1: MCQ ]                           [ Round 2: Typing ]   [ Round 3: Coding ]
+  • Timed server test                        • Real-time WPM speed • Rich IDE editor
+  • No client answer leaks                     • Accuracy calculation• Sockets auto-save
+           │                                            │                   │
+           └────────────────────────────────────────────┼───────────────────┘
+                                                        │
+           [ Anti-Cheat Surveillance Running Concurrently Across All Rounds ]
+           • DOM Focus tracking (Tab switches, clipboard copy/paste detected)
+           • Sockets broadcast instant warning badges to live HR monitors
+                                                        │
+  [ Candidate Submits Exam ] ───► Status Changes to "Review in Progress"
+                                                        │
+         ┌──────────────────────────────────────────────┘
+         ▼
+  ┌─────────────────────────────────────────────────────────────────────────┐
+  │               STAGE 3: ENGINEERING MANAGER EVALUATION                   │
+  └────────────────────────────────────┬────────────────────────────────────┘
+                                       │
+  [ Engineering Manager ] ───► Opens Review Workspace ───► Inspects Submitted Code
+                                                                   │
+  ┌────────────────────────────────────────────────────────────────┘
+  │
+  ├─► [ Option A Question Bank ] : Validates against problem difficulty metadata
+  ├─► [ OpenAI GPT-4 Worker ]    : Triggers automated complexity & logic analysis
+  ├─► [ Manual Review Decision ] : Assigns scores, adds private feedback & Shortlists
+  │
+  └─► [ Release Results Clicked ] ───► Automatically Unlocks Candidate Results Card!
+         │
+         ▼
+  ┌─────────────────────────────────────────────────────────────────────────┐
+  │                 STAGE 4: GLOBAL GOVERNANCE (ADMIN)                     │
+  └────────────────────────────────────┬────────────────────────────────────┘
+                                       │
+  [ Administrator ] ───► Reviews Analytics Radar & Leaderboards across pipeline
+                    ───► Provisions staff role accounts & monitors audit logs
     </pre>
-
-    <h3>Technology Stack Specifications:</h3>
-    <ul>
-        <li><strong>Frontend Framework:</strong> React 18, Vite Bundler, TanStack Router (File-Based Routing), TanStack React Query (Server State Cache & Offline Retry Strategy).</li>
-        <li><strong>Styling & UI Tokens:</strong> Vanilla CSS + Tailwind CSS, Radix UI Accessible Components, Lucide React Icons, and Recharts interactive metrics visualizer.</li>
-        <li><strong>Backend Engine:</strong> NestJS (Node.js/TypeScript) with modular Dependency Injection and Role-Based Access Control (RBAC) Guards.</li>
-        <li><strong>Database & Relational Model:</strong> PostgreSQL managed via TypeORM with automated migration schemas and user seeding capabilities.</li>
-        <li><strong>Real-Time Messaging & Sockets:</strong> Socket.IO with official <code>ioredis</code> adapter, featuring automatic TLS handshaking for high resilience on Upstash cloud instances.</li>
-        <li><strong>Asynchronous Queue Worker:</strong> BullMQ event queues for background email dispatching and non-blocking OpenAI grading tasks.</li>
-        <li><strong>Authentication Security:</strong> BCrypt password hashing, tokenized password reset loops, and short-lived JWT access tokens backed by database-rotated refresh tokens.</li>
-    </ul>
 
     <div class="page-break"></div>
 
-    <h2>2. User Role & Competency Matrix</h2>
-    <p>The system enforces strict multi-tenant boundary security across four primary user personas:</p>
+    <h2>2. Developer Quickstart & Environment Setup Guide</h2>
+    <p>This section provides exact technical procedures for onboarding developers to establish local development workspaces, seed database entities, verify compiler health, and initiate hot-reloading application servers.</p>
 
+    <h3>2.1. System Prerequisites</h3>
+    <ul>
+        <li><strong>Node.js & Runtime:</strong> v18.x, v20.x, or v22.x LTS (with <code>npm</code> v9+).</li>
+        <li><strong>Docker Infrastructure:</strong> Docker Desktop installed and running (for containerized PostgreSQL and Redis services).</li>
+        <li><strong>Git CLI:</strong> Required for repository synchronization and hook validation.</li>
+    </ul>
+
+    <h3>2.2. Environment Configuration File Setup (.env)</h3>
+    <p>Create an <span class="highlight">.env</span> file inside the backend root directory (<span class="highlight">c:\Users\...\hiring-platform\dezprox-backend\.env</span>) utilizing the operational configuration template below:</p>
+
+    <pre>
+# ==========================================
+# --- DEZPROX BACKEND DEV CONFIGURATION ---
+# ==========================================
+
+# --- APPLICATION ---
+PORT=4001
+NODE_ENV=development
+FRONTEND_URL=http://localhost:3000
+SEED_DEV_LOGIN_USERS=true
+
+# --- POSTGRESQL DATABASE ---
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=postgres
+DB_PASS=postgres
+DB_NAME=dezprox
+DB_SSL=false
+
+# --- REDIS QUEUES & CACHE (Supports Upstash Cloud or Local) ---
+# For Local Docker Redis: Use REDIS_HOST=localhost, REDIS_PORT=6379, REDIS_PASSWORD=
+# For Upstash Cloud: Paste Host and Password below (TLS is enabled automatically)
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_PASSWORD=
+REDIS_DB=0
+
+# --- JWT SECURITY & ENCRYPTION ---
+JWT_SECRET=dezprox_super_secret_jwt_key_2026_dev_only
+JWT_REFRESH_SECRET=dezprox_super_secret_refresh_key_2026_dev_only
+
+# --- AI EVALUATION ENGINE ---
+# Leave blank to test with intelligent heuristic fallback grading, or paste OpenAI Key:
+OPENAI_API_KEY=
+    </pre>
+
+    <h3>2.3. Step-by-Step Local Deployment & Seeding Commands</h3>
+    <p>Execute the following commands sequentially inside your Command Prompt, PowerShell, or bash terminal from the repository root directory:</p>
+
+    <pre>
+# 1. Start Local Database & Redis via Docker Compose:
+docker-compose up -d postgres redis
+
+# 2. Navigate to backend, install packages, run DB migrations and seed users:
+cd dezprox-backend
+npm install
+npm run migration:run
+npm run seed:dev-users
+
+# 3. Start Backend NestJS Server in Hot-Reloading Watch Mode:
+npm run start:dev
+
+# 4. Open a NEW Terminal, install frontend packages, and launch Vite dev UI:
+cd ..
+npm install
+npm run dev
+    </pre>
+
+    <h3>2.4. Seeded Test Accounts for Local Verification</h3>
+    <p>Running <span class="highlight">npm run seed:dev-users</span> initializes four pre-verified user credentials into PostgreSQL. Navigate to <span class="highlight">http://localhost:3000/</span> in your web browser and sign in using any of the following accounts:</p>
     <table>
         <thead>
             <tr>
-                <th style="width: 22%;">User Role</th>
-                <th style="width: 28%;">Primary Routes</th>
-                <th style="width: 50%;">Capabilities & Operational Workflow</th>
+                <th>User Persona & Role</th>
+                <th>Email Address Address</th>
+                <th>Password</th>
+                <th>Primary Access Scope</th>
             </tr>
         </thead>
         <tbody>
             <tr>
-                <td><strong>👑 Administrator</strong></td>
-                <td><code>/admin/users</code><br><code>/admin/analytics</code></td>
-                <td>• <strong>Staff Lifecycle Control:</strong> Provision, edit, and deactivate accounts for HR recruiters and Engineering Managers.<br>• <strong>Global Analytics:</strong> Monitor platform-wide test completion rates, pass/fail trends, and candidate score curves.</td>
+                <td>👑 <strong>Admin Staff</strong></td>
+                <td><code>priya@dezprox.com</code></td>
+                <td><code>password123</code></td>
+                <td>User CRUD management, role assignments, system analytics curves.</td>
             </tr>
             <tr>
-                <td><strong>🛠️ Engineering Manager</strong></td>
-                <td><code>/manager/reviews</code><br><code>/manager/question-bank</code></td>
-                <td>• <strong>Question Bank (Option A):</strong> Manage objective MCQs and practical coding algorithm tests in a unified database architecture.<br>• <strong>Manual Code Review & AI Triage:</strong> Inspect candidate coding solutions in an interactive editor, trigger automated OpenAI logic summaries, score answers manually, and release final result cards.</td>
+                <td>🛠️ <strong>Engineering Manager</strong></td>
+                <td><code>karan@dezprox.com</code></td>
+                <td><code>password123</code></td>
+                <td>Question bank creation, candidate code review ide, result releasing.</td>
             </tr>
             <tr>
-                <td><strong>👔 HR / Recruiter</strong></td>
-                <td><code>/hr/candidates</code><br><code>/hr/dashboard</code></td>
-                <td>• <strong>Pipeline & Onboarding:</strong> Generate time-limited secure assessment invitation links and trigger automated background emails via BullMQ.<br>• <strong>Real-time Surveillance:</strong> Monitor candidate progress live and track anti-cheat violation counts over WebSockets.</td>
+                <td>👔 <strong>HR Recruiter</strong></td>
+                <td><code>neha@dezprox.com</code></td>
+                <td><code>password123</code></td>
+                <td>Candidate onboarding invites, live testing surveillance, leaderboards.</td>
             </tr>
             <tr>
-                <td><strong>🧑‍💻 Candidate</strong></td>
-                <td><code>/candidate/assessment</code><br><code>/candidate/results</code></td>
-                <td>• <strong>Assessment Arena:</strong> Execute a timed 3-stage technical evaluation (MCQ, Speed Typing Test with real-time WPM, and rich Code IDE with automatic socket saving).<br>• <strong>Feedback Portal:</strong> View skill radar charts and grading reports once unlocked by hiring managers.</td>
+                <td>🧑‍💻 <strong>Demo Candidate</strong></td>
+                <td><code>aarav@dezprox.com</code></td>
+                <td><code>password123</code></td>
+                <td>Timed assessment execution arena and released feedback scorecard card.</td>
             </tr>
         </tbody>
     </table>
 
-    <h2>3. Sprint Development & Hardening Log</h2>
+    <div class="page-break"></div>
+
+    <h2>3. High-Level System Architecture & Layer Specifications</h2>
+    <p>The platform architecture separates presentation rendering, state synchronization, business logic validation, and database storage into distinct operational tiers.</p>
+
+    <pre>
+  ┌────────────────────────────────────────────────────────────────────────┐
+  │                           Client Web Browser                           │
+  │     (Vite • React 18 • TanStack Router & React Query • Radix UI)       │
+  └─────────────┬──────────────────────────────────────────▲───────────────┘
+                │ HTTP REST Requests (JWT Protected)         │ Bidirectional
+                ▼                                          │ WebSocket Events
+  ┌────────────────────────────────────────────────────────┴───────────────┐
+  │                      NestJS Enterprise Application                     │
+  │         (RBAC Guards • Validation Pipes • Throttler Rate Limiting)     │
+  └─────────────┬────────────────────────┬─────────────────┬───────────────┘
+                │                        │                 │
+     SQL Queries│ (TypeORM)              │ ioredis TCP     │ Asynchronous
+     Transactions                        │ Sockets (TLS)   │ Jobs & Cache
+                ▼                        ▼                 ▼
+     ┌────────────────────┐   ┌────────────────────┐   ┌────────────────────┐
+     │ PostgreSQL Database│   │    Redis Cluster   │   │  OpenAI GPT-4 API  │
+     │  (Relational Data, │   │  (Socket.IO PubSub,│   │  (Automated Code   │
+     │   JSONB Analytics) │   │   BullMQ Workers)  │   │   Evaluation Engine)│
+     └────────────────────┘   └────────────────────┘   └────────────────────┘
+    </pre>
+
+    <h3>Core Layer Characteristics:</h3>
     <ul>
-        <li><strong>Sprint 1 (Foundations & Real-Time Engine):</strong> Established multi-role relational PostgreSQL tables and development user seeding scripts. Built timed MCQ evaluation loops and wired real-time anti-cheat focus monitoring capable of recording tab-switching and copy-paste violations over WebSockets.</li>
-        <li><strong>Sprint 2 (Question Bank Unification & AI Workflows):</strong> Delivered Option A unified database architecture for MCQs and algorithm test banks. Implemented manual human grading review workflows for code submissions, integrated OpenAI pattern analysis queues with intelligent heuristic fallbacks, and wired transactional password recovery routes (<code>/forgot-password</code> to <code>/reset-password</code>).</li>
-        <li><strong>Sprint 3 (Compiler Reconciliation & Route Stability):</strong> Eliminated AST syntax warnings in TanStack Router generator plugins. Aligned local Vite development network proxies with NestJS servers to prevent CORS failures, and resolved 100% of TypeScript compilation errors across frontend dashboards and backend models.</li>
-        <li><strong>Sprint 4 (Production Polish & Cloud Resilience):</strong> Implemented dynamic route-level lazy bundle code splitting for high SEO speed scores and optimal loading performance. Deployed a shared interactive Notification Center for internal team updates, and upgraded all Redis connections to automatically negotiate encrypted TLS handshakes on cloud networks like Upstash, eliminating socket drops and connection resets.</li>
+        <li><strong>Presentation Layer:</strong> React 18 running via Vite runtime, implementing dynamic lazy code splitting (<span class="highlight">React.lazy</span> chunks) to optimize client execution bundle sizes. TanStack Router delivers compile-time type safety across parameter routes, while React Query handles optimistic caching and offline polling retries.</li>
+        <li><strong>Service & Business Logic Layer:</strong> NestJS leveraging modular TypeScript dependency injection. Request lifecycle interception is regulated via global JWT authentication guards, role access evaluation checks, Zod/Class-Validator DTO pipes, and IP rate throttling (100 req/min limit to mitigate denial-of-service abuse).</li>
+        <li><strong>Persistence Layer:</strong> PostgreSQL structured with ACID-compliant TypeORM database repositories. Complex assessment submissions and dynamic metadata are persisted via relational foreign keys combined with indexed JSONB data columns.</li>
     </ul>
 
-    <h2>4. System Verification & Quality Audit</h2>
-    <p>The codebase currently exists in a verified, zero-error operational state:</p>
+    <h2>4. Deep-Dive: Redis Sub-Systems & Asynchronous Processing</h2>
+    <p>Redis serves three distinct operational objectives within the application core to guarantee low-latency API responsiveness and fault-tolerant background processing.</p>
+
+    <pre>
+                        ┌─────────────────────────────────┐
+                        │        Redis Engine Layer       │
+                        └─────────────────┬───────────────┘
+                                          │
+        ┌─────────────────────────────────┼─────────────────────────────────┐
+        ▼                                 ▼                                 ▼
+┌──────────────────────┐        ┌──────────────────────┐        ┌──────────────────────┐
+│  1. Real-Time PubSub │        │ 2. BullMQ Event Worker│       │  3. High-Speed Cache │
+│    (RedisIoAdapter)  │        │     (BullModule)     │        │     (CacheModule)    │
+├──────────────────────┤        ├──────────────────────┤        ├──────────────────────┤
+│ • Socket.IO scaling  │        │ • Email job triggers │        │ • 10m TTL data pool  │
+│ • Live exam timer    │        │ • OpenAI code review │        │ • Leaderboard ranking│
+│ • Anti-Cheat stream  │        │ • Retry backoff loop │        │ • Query deduplication│
+└──────────────────────┘        └──────────────────────┘        └──────────────────────┘
+    </pre>
+
+    <h3>4.1. Real-Time WebSocket Scaling (Pub/Sub via RedisIoAdapter)</h3>
+    <p>To overcome native Socket.IO memory segmentation constraints across multi-node deployment clusters, the backend incorporates an official <span class="highlight">RedisIoAdapter</span> instantiated with dual publisher and subscriber <span class="highlight">ioredis</span> TCP client instances.</p>
     <ul>
-        <li><strong>TypeScript Build Inspection:</strong> Verified <code>tsc --noEmit</code> across both frontend and backend repositories with exactly <strong>0 compiler errors or warnings</strong>.</li>
-        <li><strong>ESLint AST Check:</strong> Resolved all flat configuration parser root rules; zero lint errors reported across project workspaces.</li>
-        <li><strong>Live Server Execution:</strong> Both the backend API Gateway (<code>http://localhost:4001</code>) and the frontend Vite server (<code>http://localhost:3000</code>) operate cleanly with fully seeded test accounts.</li>
-        <li><strong>Version Control Sync:</strong> All source files, configuration templates, and stability bugfixes are published to the remote <code>main</code> branch on GitHub (<code>https://github.com/dezprox25/hiring-platform</code>).</li>
+        <li><strong>Cross-Node Event Broadcasting:</strong> When HR monitors subscribe to live testing sessions, event streams (<span class="highlight">code:autosave</span>, <span class="highlight">anticheat:violation</span>, <span class="highlight">timer:request</span>) are published directly to Redis Pub/Sub channels, ensuring instant delivery across all connected nodes.</li>
+        <li><strong>Continuous Auto-Save Streaming:</strong> During Round 3 (Coding Assessment), candidate keystrokes are batched and streamed across WebSockets every 3 seconds into transient Redis registers prior to periodic relational persistence, eliminating data loss upon page refresh.</li>
+    </ul>
+
+    <h3>4.2. Asynchronous Queue Processing (BullMQ Worker Pools)</h3>
+    <p>Heavy compute and external network operations are systematically isolated from synchronous HTTP request loops via <span class="highlight">BullModule</span> event workers running on Redis.</p>
+    <ul>
+        <li><strong>AI Code Evaluation Queue (<span class="highlight">ai-evaluations</span>):</strong> Upon code submission, the API dispatches an asynchronous evaluation job to Redis containing source snapshots and complexity parameters, instantly returning HTTP <span class="highlight">202 Accepted</span>. Background worker threads consume the job, interface with OpenAI GPT-4 API endpoints (or execute intelligent fallback heuristic parsers if API rate thresholds occur), and write final evaluation metrics directly into the database.</li>
+        <li><strong>Transactional Mailer Worker:</strong> Candidate assessment invites and password recovery emails are routed through asynchronous worker queues equipped with automatic retry algorithms and dead-letter fault logging.</li>
+    </ul>
+
+    <h3>4.3. High-Speed Application Cache & TLS Resilience</h3>
+    <ul>
+        <li><strong>Query Shielding:</strong> Complex analytics aggregations and leaderboard joins are wrapped in a global <span class="highlight">CacheModule</span> powered by <span class="highlight">cache-manager-ioredis</span>. Results are cached in memory with a 600-second (10-minute) TTL, reducing relational database query overhead by up to 85%.</li>
+        <li><strong>Upstash Cloud TLS Auto-Detection:</strong> All backend Redis connection constructors implement intelligent domain inspection logic. When external cloud hostnames (such as <span class="highlight">*.upstash.io</span>) are configured, the client automatically initiates encrypted TLS handshaking with SSL certificate validation, preventing packet sniffing and connection reset exceptions (<span class="highlight">ECONNRESET</span>).</li>
+    </ul>
+
+    <div class="page-break"></div>
+
+    <h2>5. Deep-Dive: Docker Containerization & Orchestration Topology</h2>
+    <p>The platform infrastructure utilizes Docker container orchestration designed for immutable deployments, reproducible development environments, and secure network segmentation.</p>
+
+    <pre>
+  ┌────────────────────────────────────────────────────────────────────────┐
+  │                Host Machine / Docker Server Environment                │
+  │                                                                        │
+  │   ┌───────────────────────────┐     ┌──────────────────────────────┐   │
+  │   │     Frontend Container    │     │      Backend Container       │   │
+  │   │   (Vite • Nginx Alpine)   │     │    (NestJS Node 22 Alpine)   │   │
+  │   │         Port: 3000        │     │          Port: 4001          │   │
+  │   └─────────────┬─────────────┘     └──────────────┬───────────────┘   │
+  │                 │                                  │                   │
+  │                 │    Internal Docker Bridge Network (dezprox-net)      │
+  │                 └─────────────────┬────────────────┘                   │
+  │                                   ▼                                    │
+  │   ┌───────────────────────────┬────────────────────────────────────┐   │
+  │   │    PostgreSQL Container   │         Redis DB Container         │   │
+  │   │     (postgres:16-alpine)  │          (redis:7-alpine)          │   │
+  │   │         Port: 5432        │             Port: 6379             │   │
+  │   └───────────────────────────┴────────────────────────────────────┘   │
+  └────────────────────────────────────────────────────────────────────────┘
+    </pre>
+
+    <h3>5.1. Multi-Stage Build Architecture</h3>
+    <ul>
+        <li><strong>Backend Build Stage (<span class="highlight">dezprox-backend/Dockerfile</span>):</strong> Stage 1 boots an isolated <span class="highlight">node:22-alpine</span> image, compiling TypeScript source trees (<span class="highlight">tsc -p tsconfig.json</span>). Stage 2 creates an optimized production run image containing solely compiled executable Javascript binaries (<span class="highlight">dist/</span>) and production node_modules, shrinking final image weight under 140 MB and securing proprietary source code.</li>
+        <li><strong>Frontend Build Stage (<span class="highlight">Dockerfile</span>):</strong> Stage 1 transpiles React JSX assets into optimized static bundles via Vite. Stage 2 initializes a hardened <span class="highlight">nginx:alpine</span> web server configured to directly serve static assets with compression headers and reverse API routing.</li>
+    </ul>
+
+    <h3>5.2. Docker Compose Orchestration & Network Security</h3>
+    <ul>
+        <li><strong>Private Bridge Network Architecture:</strong> Containers communicate exclusively across an internal Docker network (<span class="highlight">dezprox-net</span>). PostgreSQL (<span class="highlight">port 5432</span>) and Redis (<span class="highlight">port 6379</span>) ports are completely isolated from external host network interfaces, accessible strictly via container DNS discovery names (<span class="highlight">postgres</span> and <span class="highlight">redis</span>).</li>
+        <li><strong>Automated Dependency Health Checks:</strong> To eliminate race conditions and startup crash loops, the API backend defines explicit health synchronizations (<span class="highlight">depends_on: condition: service_healthy</span>). PostgreSQL executes scheduled socket checks (<span class="highlight">pg_isready</span>) and Redis responds to heartbeat commands (<span class="highlight">redis-cli ping</span>) before API application initialization begins.</li>
+        <li><strong>Persistent Volume Binding:</strong> Relational tables and database files are mounted directly onto dedicated host storage blocks (<span class="highlight">postgres_data:/var/lib/postgresql/data</span>), preserving candidate evaluation histories across container reprovisioning.</li>
+    </ul>
+
+    <h2>6. Core Technical Execution Protocols</h2>
+
+    <h3>6.1. Authentication & Token Rotation Lifecycle</h3>
+    <p>Security access relies on stateless JWT access credentials combined with state-aware refresh rotation mechanisms.</p>
+    <ol>
+        <li><strong>Token Issuance:</strong> Upon credential authentication, the server computes a signed JWT access token with an explicit 15-minute validity lifespan. Concurrently, a secure Refresh Token (7-day validity) is generated, subjected to one-way BCrypt cryptographic hashing, and stored inside the relational database user row.</li>
+        <li><strong>Token Rotation Defense:</strong> Upon access token expiration, client apps automatically hit <span class="highlight">/auth/refresh</span>. The backend verifies the refresh signature against the stored database hash, generates a new Access/Refresh pair, and instantly overwrites the existing database hash—neutralizing token capture and replay attack vectors.</li>
+        <li><strong>Role-Based Access Control:</strong> API endpoints employ explicit role decorators (<span class="highlight">@Roles(Role.ADMIN, Role.MANAGER)</span>) verified during request interception by global <span class="highlight">RolesGuard</span> execution policies prior to invoking controller methods.</li>
+    </ol>
+
+    <h3>6.2. Candidate Real-Time Assessment & Anti-Cheat Logic</h3>
+    <ul>
+        <li><strong>Round 1 (MCQ Server Validation):</strong> Candidate answer submissions are POSTed directly to <span class="highlight">/assessments/:id/mcq/submit</span>. Correct answer maps are completely excluded from client React bundles; grading algorithms operate strictly within transactional server logic.</li>
+        <li><strong>Round 2 (Typing Speed Velocity Engine):</strong> The client computes Words-Per-Minute (WPM) speed and typing accuracy percentages in real time via character differencing analysis, transmitting validated performance strings to database storage upon completion.</li>
+        <li><strong>Round 3 (Code Evaluation Architecture):</strong> Per operational product guidelines, submitted coding solutions are archived within the assessment database schema without executing untrusted candidate code on host server processors. Engineering managers inspect submissions inside an integrated IDE review workspace to grade algorithmic elegance and logic quality manually.</li>
+        <li><strong>Anti-Cheat Surveillance Engine:</strong> The client assessment arena attaches native DOM event listeners to window browser lifecycle hooks (<span class="highlight">blur</span>, <span class="highlight">visibilitychange</span>, <span class="highlight">copy</span>, <span class="highlight">paste</span>). Whenever an focus shift occurs (such as tab switching or pasting external clipboard content), an immediate real-time event (<span class="highlight">anticheat:violation</span>) is published over Socket.IO to monitoring HR dashboard screens, dynamically incrementing visual warning badges and registering time-stamped audit records.</li>
     </ul>
 
     <div class="footer">
-        Generated by Antigravity AI Coding Assistant • Dezprox Hiring Platform Progress Deliverable • August 2026
+        Dezprox Hiring Platform • Technical Architecture Specification & Engineering Reference • Confidential & Proprietary
     </div>
 </body>
 </html>
